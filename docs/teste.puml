@@ -19,6 +19,7 @@ class Item {
 class Exemplar {
   - tombo : String
   - teste : String
+  - tes : int
 }
 
 Item "1" *-- "0..*" Exemplar : possui
