@@ -9,9 +9,11 @@ sim.
 
 ## Equipe
 
-| Nome | Matrícula |
-|---|---|
-| | |
+| Nome    | Matrícula   | Github    |
+|---------|-------------|-----------|
+| Mylena  | 20250138232 | Mylena-p  |
+| Andrêciele | 20250104904 | andreciele |
+| Ellen | 20250114268 | ellensilva15 |
 
 ## Uso declarado
 
@@ -20,6 +22,9 @@ Uma linha por uso relevante. Se não houve uso, escreva "Não houve uso de ferra
 | Data | Ferramenta | Finalidade | Arquivos/trechos afetados | O que foi revisado e alterado por vocês |
 |---|---|---|---|---|
 | | | | | |
+
+## Acervo escolhido: Filmes
+## Regras de negócio: 
 
 ## Compromisso
 
