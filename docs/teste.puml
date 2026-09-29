@@ -14,12 +14,16 @@ hide empty members
 class Item {
   - codigo : String
   - titulo : String
+  - autoria : String
+  - categoria : String
+  - ano : int
+
 }
 
 class Exemplar {
   - tombo : String
-  - teste : String
-  - tes : int
+  - item : Item
+  - status : StatusExemplar
 }
 
 Item "1" *-- "0..*" Exemplar : possui
