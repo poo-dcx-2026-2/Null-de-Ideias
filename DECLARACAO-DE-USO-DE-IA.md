@@ -23,9 +23,11 @@ Uma linha por uso relevante. Se não houve uso, escreva "Não houve uso de ferra
 |---|---|---|---|---|
 | | | | | |
 
-## Acervo escolhido: Filmes
+## Acervo e a regra autoral
 
-## Regras de negócio: implementação do método restrição de idade. 
+ | Acervo | Regras autorais     |
+ |--------|---------------------|
+ | Filmes | Restrição de idade  |
 
 ## Compromisso
 
