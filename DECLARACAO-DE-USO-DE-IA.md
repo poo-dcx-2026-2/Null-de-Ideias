@@ -25,9 +25,14 @@ Uma linha por uso relevante. Se não houve uso, escreva "Não houve uso de ferra
 
 ## Acervo e a regra autoral
 
- | Acervo | Regras autorais     |
- |--------|---------------------|
- | Filmes | Restrição de idade  |
+ | Acervo | Regras autorais         |
+ |--------|-------------------------|
+ | Filmes | Classificação indicativa |
+ |        | Penalidade por atraso   |
+ |        | Lista de espera         |
+ |        | Filmes indisponíveis    |
+ |        | Limite de empréstimos |
+
 
 ## Compromisso
 
