@@ -64,7 +64,15 @@ public class AcervoEmMemoria implements AcervoService {
 
     @Override
     public List<ItemView> buscarPorTitulo(String trecho) {
-        throw new UnsupportedOperationException("Entrega 1: implementar buscarPorTitulo");
+        List<ItemView> resultado = new ArrayList<>();
+        for (Item item : itens){
+            if (item.getTitulo().equalsIgnoreCase(trecho)){
+                resultado.add(paraView(item));
+            }
+        }
+        return resultado;
+        // TODO: Implementa as exceções.
+        // throw new UnsupportedOperationException("Entrega 1: implementar buscarPorTitulo");
     }
 
     @Override
