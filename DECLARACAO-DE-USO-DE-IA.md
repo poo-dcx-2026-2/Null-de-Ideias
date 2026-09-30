@@ -24,7 +24,8 @@ Uma linha por uso relevante. Se não houve uso, escreva "Não houve uso de ferra
 | | | | | |
 
 ## Acervo escolhido: Filmes
-## Regras de negócio: implementacção do metodo restrição de idade. 
+
+## Regras de negócio: implementação do método restrição de idade. 
 
 ## Compromisso
 

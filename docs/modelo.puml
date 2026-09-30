@@ -1,7 +1,7 @@
 @startuml
-' Modelo de domínio do sistema: Entrega 1.
+' Modelo de domínio do sistema. Entrega 1.
 '
-' Este arquivo é o ponto de partida. Substitua pelo modelo da sua equipe.
+' Este arquivo é o ponto de partida. Substitua pelo modelo da sua equipa.
 ' O diagrama precisa corresponder ao código entregue.
 '
 ' Para gerar a imagem: instale o plugin PlantUML no IntelliJ, ou use
@@ -14,19 +14,60 @@ hide empty members
 class Item {
   - codigo : String
   - titulo : String
+  - autoria : String
+  - categoria : String
+  - ano : int
 }
 
 class Exemplar {
   - tombo : String
+  - item : Item
+  - status : StatusExemplar
 }
 
+class Biblioteca{
+  + acervo(): AcervoServise
+  + usuarios(): UsuarioService
+  + emprestimos(): EmprestimoService
+  + relatorioS(): RelatorioService
+  + salvar(): Void
+  + carregar(): Void
+}
+interface AcervoServise {
+
+}
+interface UsuarioService {
+}
+interface EmprestimoService {
+}
+interface RelatorioService {
+}
+
+enum StatusExemplar{
+   DISPONIVEL
+   EMPRESTADO
+   RESERVADO
+}
+
+enum StatusEmprestimo {
+   ATIVO
+   DEVOLVIDO
+   ATRASADO
+}
+
+
 Item "1" *-- "0..*" Exemplar : possui
+Exemplar --> StatusExemplar : estado
+
+Biblioteca --> AcervoServise : utiliza
+Biblioteca --> UsuarioService : utiliza
+Biblioteca --> EmprestimoService : utiliza
+Biblioteca --> RelatorioService : utiliza
 
 note bottom of Item
-  Ponto de partida, não modelo pronto.
-  Decidam: quais entidades existem,
-  quem guarda o quê, quais invariantes
-  cada objeto protege.
+  O código deve ser único e não nulo.
+  O titulo não pode ser vazio.
+  O ano de publicação não pode ser no futuro.
 end note
 
 @enduml
