@@ -20,8 +20,8 @@ sim.
 Uma linha por uso relevante. Se não houve uso, escreva "Não houve uso de ferramentas de IA".
 
 | Data | Ferramenta | Finalidade | Arquivos/trechos afetados | O que foi revisado e alterado por vocês |
-|---|---|---|---|---|
-| | | | | |
+|-|-|--|---|---|
+| | |  | | |
 
 ## Acervo e a regra autoral
 
