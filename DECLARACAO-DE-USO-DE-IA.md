@@ -21,7 +21,7 @@ Uma linha por uso relevante. Se não houve uso, escreva "Não houve uso de ferra
 
 | Data | Ferramenta | Finalidade | Arquivos/trechos afetados | O que foi revisado e alterado por vocês |
 |-|-|--|---|---|
-| | |  | | |
+| 30/09 | ChatGPT    | Ideias para a criação das regras autorais | DECLARACAO-DE-USO-DE-IA/Acervo e a regra autoral | As regras autorais |
 
 ## Acervo e a regra autoral
 
