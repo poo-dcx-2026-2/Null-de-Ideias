@@ -82,32 +82,33 @@ public class AcervoEmMemoria implements AcervoService {
 
     @Override
     public void adicionarExemplar(String codigoDoItem, String tombo)
-            throws RecursoNaoEncontradoException, RecursoDuplicadoException {
+            throws RecursoNaoEncontradoException, RecursoDuplicadoException{
         Item item = localizar(codigoDoItem);
-        if (item == null){
+        if (item == null) {
             throw new RecursoNaoEncontradoException("Item não encontrado: " + codigoDoItem);
         }
-        Exemplar exemplar = new Exemplar(tombo,item);
-        if (!itens.isEmpty()){
-            for (Exemplar exemplarAtual : ){
-                if(exemplarAtual.getTombo().equalsIgnoreCase(tombo)){
+        for (Item outro : itens) {
+            for (Exemplar exemplar : outro.getExemplares()) {
+                if (exemplar.getTombo().equals(tombo)) {
                     throw new RecursoDuplicadoException("Já existe exemplar com o tombo " + tombo);
                 }
             }
         }
-        exemplares.add(exemplar);
+
+        item.getExemplares().add(new Exemplar(tombo, item));
+
+    }
 
         // TODO: nodificar classes adicionar exemplar e lista exemplares  todo errado.
 
-        //throw new UnsupportedOperationException("Entrega 1: implementar adicionarExemplar");
-    }
+        //throw new UnsupportedOperationException("Entrega 1: implementar adicionarExemplar")
 
     @Override
     public List<ExemplarView> listarExemplares(String codigoDoItem)
             throws RecursoNaoEncontradoException {
         Item item  = localizar(codigoDoItem);
         List<ExemplarView>listaDeExemplares = new ArrayList<>();
-        for (Exemplar exemplarAtual : exemplares ){
+        for (Exemplar exemplarAtual : exemplar ){
             if (exemplarAtual.getItem().getCodigo() == codigoDoItem){
                 listaDeExemplares.add();
 
@@ -115,7 +116,7 @@ public class AcervoEmMemoria implements AcervoService {
         }
 
 
-        throw new UnsupportedOperationException("Entrega 1: implementar listarExemplares");
+        //throw new UnsupportedOperationException("Entrega 1: implementar listarExemplares");
     }
 
     @Override
