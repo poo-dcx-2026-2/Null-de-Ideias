@@ -28,6 +28,7 @@ import br.ufpb.dcx.poo.biblioteca.contrato.excecoes.RecursoNaoEncontradoExceptio
 public class AcervoEmMemoria implements AcervoService {
 
     private final List<Item> itens = new ArrayList<>();
+    private final List<Exemplar>exemplares = new ArrayList<>();
 
     @Override
     public void cadastrarItem(String codigo, String titulo, String autoria,
@@ -83,12 +84,27 @@ public class AcervoEmMemoria implements AcervoService {
     @Override
     public void adicionarExemplar(String codigoDoItem, String tombo)
             throws RecursoNaoEncontradoException, RecursoDuplicadoException {
+        Item item = localizar(codigoDoItem);
+        if (item == null){
+            throw new RecursoNaoEncontradoException("Item não encontrado: " + codigoDoItem);
+        }
+        Exemplar exemplar = new Exemplar(tombo,item);
+        if (!exemplares.isEmpty()){
+            for (Exemplar exemplarAtual : exemplares){
+                if(exemplarAtual.getTombo().equalsIgnoreCase(tombo)){
+                    throw new RecursoDuplicadoException("Já existe exemplar com o tombo " + tombo);
+                }
+            }
+        }
+        exemplares.add(exemplar);
+
         throw new UnsupportedOperationException("Entrega 1: implementar adicionarExemplar");
     }
 
     @Override
     public List<ExemplarView> listarExemplares(String codigoDoItem)
             throws RecursoNaoEncontradoException {
+
         throw new UnsupportedOperationException("Entrega 1: implementar listarExemplares");
     }
 
