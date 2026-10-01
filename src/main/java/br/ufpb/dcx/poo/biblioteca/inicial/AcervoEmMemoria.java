@@ -28,7 +28,6 @@ import br.ufpb.dcx.poo.biblioteca.contrato.excecoes.RecursoNaoEncontradoExceptio
 public class AcervoEmMemoria implements AcervoService {
 
     private final List<Item> itens = new ArrayList<>();
-    private final List<Exemplar>exemplares = new ArrayList<>();
 
     @Override
     public void cadastrarItem(String codigo, String titulo, String autoria,
@@ -89,8 +88,8 @@ public class AcervoEmMemoria implements AcervoService {
             throw new RecursoNaoEncontradoException("Item não encontrado: " + codigoDoItem);
         }
         Exemplar exemplar = new Exemplar(tombo,item);
-        if (!exemplares.isEmpty()){
-            for (Exemplar exemplarAtual : exemplares){
+        if (!itens.isEmpty()){
+            for (Exemplar exemplarAtual : ){
                 if(exemplarAtual.getTombo().equalsIgnoreCase(tombo)){
                     throw new RecursoDuplicadoException("Já existe exemplar com o tombo " + tombo);
                 }
@@ -98,12 +97,23 @@ public class AcervoEmMemoria implements AcervoService {
         }
         exemplares.add(exemplar);
 
-        throw new UnsupportedOperationException("Entrega 1: implementar adicionarExemplar");
+        // TODO: nodificar classes adicionar exemplar e lista exemplares  todo errado.
+
+        //throw new UnsupportedOperationException("Entrega 1: implementar adicionarExemplar");
     }
 
     @Override
     public List<ExemplarView> listarExemplares(String codigoDoItem)
             throws RecursoNaoEncontradoException {
+        Item item  = localizar(codigoDoItem);
+        List<ExemplarView>listaDeExemplares = new ArrayList<>();
+        for (Exemplar exemplarAtual : exemplares ){
+            if (exemplarAtual.getItem().getCodigo() == codigoDoItem){
+                listaDeExemplares.add();
+
+            }
+        }
+
 
         throw new UnsupportedOperationException("Entrega 1: implementar listarExemplares");
     }
