@@ -47,6 +47,7 @@ enum StatusExemplar{
    DISPONIVEL
    EMPRESTADO
    RESERVADO
+   INDISPONIVEL
 }
 
 enum StatusEmprestimo {
