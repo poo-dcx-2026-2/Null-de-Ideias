@@ -105,5 +105,7 @@ O uso é permitido como apoio, desde que declarado em [`DECLARACAO-DE-USO-DE-IA.
 
 | Nome | Matrícula | GitHub |
 |---|---|---|
-| | | |
-| | | |
+| Mylena  | 20250138232 | Mylena-p  |
+| Andrêciele | 20250104904 | andreciele |
+| Ellen | 20250114268 | ellensilva15 |
+
