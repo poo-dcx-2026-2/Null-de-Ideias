@@ -1,74 +1,290 @@
 @startuml
-' Modelo de domínio do sistema. Entrega 1.
-'
-' Este arquivo é o ponto de partida. Substitua pelo modelo da sua equipa.
-' O diagrama precisa corresponder ao código entregue.
-'
-' Para gerar a imagem: instale o plugin PlantUML no IntelliJ, ou use
-'   plantuml docs/modelo.puml
-' e versione a imagem gerada ao lado deste arquivo.
 
-skinparam classAttributeIconSize 0
-hide empty members
+
+' =========================================================
+' ENUM
+' =========================================================
+
+enum StatusExemplar {
+    DISPONIVEL
+    EMPRESTADO
+    RESERVADO
+    INDISPONIVEL
+}
+
+
+' =========================================================
+' CLASSES DE DOMÍNIO
+' =========================================================
 
 class Item {
-  - codigo : String
-  - titulo : String
-  - autoria : String
-  - categoria : String
-  - ano : int
+    - codigo : String
+    - titulo : String
+    - autoria : String
+    - categoria : String
+    - ano : int
+    - exemplares : List<Exemplar>
+
+    + Item(codigo : String, titulo : String, autoria : String, categoria : String, ano : int)
+
+    + getCodigo() : String
+    + setCodigo(codigo : String) : void
+
+    + getTitulo() : String
+    + setTitulo(titulo : String) : void
+
+    + getAutoria() : String
+    + setAutoria(autoria : String) : void
+
+    + getCategoria() : String
+    + setCategoria(categoria : String) : void
+
+    + getAno() : int
+    + setAno(ano : int) : void
+
+    + getExemplares() : List<Exemplar>
 }
+
 
 class Exemplar {
-  - tombo : String
-  - item : Item
-  - status : StatusExemplar
+    - tombo : String
+    - item : Item
+    - status : StatusExemplar
+
+    + Exemplar(tombo : String, item : Item)
+
+    + getTombo() : String
+    + setTombo(tombo : String) : void
+
+    + getItem() : Item
+    + setItem(item : Item) : void
+
+    + getStatus() : StatusExemplar
+    + setStatus(status : StatusExemplar) : void
 }
 
-class Biblioteca{
-  + acervo(): AcervoServise
-  + usuarios(): UsuarioService
-  + emprestimos(): EmprestimoService
-  + relatorioS(): RelatorioService
-  + salvar(): Void
-  + carregar(): Void
-}
-interface AcervoServise {
 
+' =========================================================
+' CLASSE PRINCIPAL
+' =========================================================
+
+class BibliotecaInicial {
+    - acervo : AcervoEmMemoria
+    - usuarios : UsuariosEmMemoria
+    - emprestimos : EmprestimosNaoImplementados
+    - relatorios : RelatoriosNaoImplementados
+
+    + acervo() : AcervoService
+    + usuarios() : UsuarioService
+    + emprestimos() : EmprestimoService
+    + relatorios() : RelatorioService
+
+    + salvar() : void
+    + carregar() : void
 }
+
+
+' =========================================================
+' SERVIÇO DE ACERVO
+' =========================================================
+
+class AcervoEmMemoria {
+    - itens : List<Item>
+
+    + cadastrarItem(codigo : String, titulo : String, autoria : String, categoria : String, ano : int) : void
+    + buscarItem(codigo : String) : ItemView
+    + listarItens() : List<ItemView>
+    + buscarPorTitulo(trecho : String) : List<ItemView>
+    + buscarPorCategoria(categoria : String) : List<ItemView>
+    + adicionarExemplar(codigoDoItem : String, tombo : String) : void
+    + listarExemplares(codigoDoItem : String) : List<ExemplarView>
+    + baixarExemplar(tombo : String) : void
+
+    - localizar(codigo : String) : Item
+    - paraView(item : Item) : ItemView
+    - exigirTextoPreenchido(valor : String, campo : String) : void
+
+    ~ itens() : List<Item>
+}
+
+
+' =========================================================
+' SERVIÇO DE USUÁRIOS
+' =========================================================
+
+class UsuariosEmMemoria {
+    - matriculas : List<String>
+    - nomes : List<String>
+
+    + cadastrarUsuario(matricula : String, nome : String) : void
+    + buscarUsuario(matricula : String) : UsuarioView
+    + listarUsuarios() : List<UsuarioView>
+    + desativarUsuario(matricula : String) : void
+    + reativarUsuario(matricula : String) : void
+}
+
+
+' =========================================================
+' SERVIÇO DE EMPRÉSTIMOS
+' =========================================================
+
+class EmprestimosNaoImplementados {
+
+    + emprestar(tombo : String, matricula : String, data : LocalDate) : String
+    + devolver(tombo : String, data : LocalDate) : void
+    + listarEmprestimosDoUsuario(matricula : String) : List<EmprestimoView>
+    + listarAtrasados(data : LocalDate) : List<EmprestimoView>
+    + reservar(codigoDoItem : String, matricula : String, data : LocalDate) : String
+    + listarReservas(codigoDoItem : String) : List<ReservaView>
+    + cancelarReserva(idDaReserva : String) : void
+}
+
+
+' =========================================================
+' SERVIÇO DE RELATÓRIOS
+' =========================================================
+
+class RelatoriosNaoImplementados {
+
+    + itensMaisEmprestados(n : int) : List<ItemView>
+    + emprestimosPorCategoria() : Map<String, Long>
+    + usuariosComAtraso(data : LocalDate) : List<UsuarioView>
+    + taxaDeOcupacaoDoAcervo() : double
+    + importarItensEmLote(arquivo : Path) : int
+}
+
+
+' =========================================================
+' INTERFACES / CONTRATOS
+' =========================================================
+
+interface Biblioteca {
+    + acervo() : AcervoService
+    + usuarios() : UsuarioService
+    + emprestimos() : EmprestimoService
+    + relatorios() : RelatorioService
+    + salvar() : void
+    + carregar() : void
+}
+
+
+interface AcervoService {
+    + cadastrarItem(codigo : String, titulo : String, autoria : String, categoria : String, ano : int) : void
+    + buscarItem(codigo : String) : ItemView
+    + listarItens() : List<ItemView>
+    + buscarPorTitulo(trecho : String) : List<ItemView>
+    + buscarPorCategoria(categoria : String) : List<ItemView>
+    + adicionarExemplar(codigoDoItem : String, tombo : String) : void
+    + listarExemplares(codigoDoItem : String) : List<ExemplarView>
+    + baixarExemplar(tombo : String) : void
+}
+
+
 interface UsuarioService {
+    + cadastrarUsuario(matricula : String, nome : String) : void
+    + buscarUsuario(matricula : String) : UsuarioView
+    + listarUsuarios() : List<UsuarioView>
+    + desativarUsuario(matricula : String) : void
+    + reativarUsuario(matricula : String) : void
 }
+
+
 interface EmprestimoService {
+    + emprestar(tombo : String, matricula : String, data : LocalDate) : String
+    + devolver(tombo : String, data : LocalDate) : void
+    + listarEmprestimosDoUsuario(matricula : String) : List<EmprestimoView>
+    + listarAtrasados(data : LocalDate) : List<EmprestimoView>
+    + reservar(codigoDoItem : String, matricula : String, data : LocalDate) : String
+    + listarReservas(codigoDoItem : String) : List<ReservaView>
+    + cancelarReserva(idDaReserva : String) : void
 }
+
+
 interface RelatorioService {
+    + itensMaisEmprestados(n : int) : List<ItemView>
+    + emprestimosPorCategoria() : Map<String, Long>
+    + usuariosComAtraso(data : LocalDate) : List<UsuarioView>
+    + taxaDeOcupacaoDoAcervo() : double
+    + importarItensEmLote(arquivo : Path) : int
 }
 
-enum StatusExemplar{
-   DISPONIVEL
-   EMPRESTADO
-   RESERVADO
-   INDISPONIVEL
+
+' =========================================================
+' CLASSES VIEW
+' =========================================================
+
+class ItemView {
 }
 
-enum StatusEmprestimo {
-   ATIVO
-   DEVOLVIDO
-   ATRASADO
+class ExemplarView {
 }
 
+class UsuarioView {
+}
+
+class EmprestimoView {
+}
+
+class ReservaView {
+}
+
+
+' =========================================================
+' RELACIONAMENTOS DE HERANÇA / IMPLEMENTAÇÃO
+' =========================================================
+
+BibliotecaInicial ..|> Biblioteca
+AcervoEmMemoria ..|> AcervoService
+UsuariosEmMemoria ..|> UsuarioService
+EmprestimosNaoImplementados ..|> EmprestimoService
+RelatoriosNaoImplementados ..|> RelatorioService
+
+
+' =========================================================
+' RELACIONAMENTOS DO DOMÍNIO
+' =========================================================
 
 Item "1" *-- "0..*" Exemplar : possui
-Exemplar --> StatusExemplar : estado
+Exemplar --> Item : pertence a
+Exemplar --> StatusExemplar : possui estado
 
-Biblioteca --> AcervoServise : utiliza
-Biblioteca --> UsuarioService : utiliza
-Biblioteca --> EmprestimoService : utiliza
-Biblioteca --> RelatorioService : utiliza
 
-note bottom of Item
-  O código deve ser único e não nulo.
-  O titulo não pode ser vazio.
-  O ano de publicação não pode ser no futuro.
-end note
+' =========================================================
+' RELACIONAMENTOS DA BIBLIOTECA
+' =========================================================
+
+BibliotecaInicial *-- AcervoEmMemoria : possui
+BibliotecaInicial *-- UsuariosEmMemoria : possui
+BibliotecaInicial *-- EmprestimosNaoImplementados : possui
+BibliotecaInicial *-- RelatoriosNaoImplementados : possui
+
+
+' =========================================================
+' RELACIONAMENTOS DOS SERVIÇOS
+' =========================================================
+
+AcervoEmMemoria --> Item : gerencia
+AcervoEmMemoria --> ItemView : cria
+AcervoEmMemoria --> ExemplarView : cria
+
+RelatoriosNaoImplementados --> ItemView : utiliza
+RelatoriosNaoImplementados --> UsuarioView : utiliza
+RelatoriosNaoImplementados --> EmprestimoView : utiliza
+
+EmprestimosNaoImplementados --> EmprestimoView : utiliza
+EmprestimosNaoImplementados --> ReservaView : utiliza
+
+UsuariosEmMemoria --> UsuarioView : cria
+
+
+' =========================================================
+' BIBLIOTECA E SEUS CONTRATOS
+' =========================================================
+
+BibliotecaInicial ..> AcervoService : utiliza
+BibliotecaInicial ..> UsuarioService : utiliza
+BibliotecaInicial ..> EmprestimoService : utiliza
+BibliotecaInicial ..> RelatorioService : utiliza
+
 
 @enduml
