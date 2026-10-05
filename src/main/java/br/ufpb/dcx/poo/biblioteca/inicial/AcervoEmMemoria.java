@@ -1,7 +1,9 @@
 package br.ufpb.dcx.poo.biblioteca.inicial;
 
+import java.text.Collator;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import br.ufpb.dcx.poo.biblioteca.contrato.AcervoService;
 import br.ufpb.dcx.poo.biblioteca.contrato.ExemplarView;
@@ -58,7 +60,8 @@ public class AcervoEmMemoria implements AcervoService {
         for (Item item : itens) {
             resultado.add(paraView(item));
         }
-        resultado.sort((a, b) -> a.titulo().compareToIgnoreCase(b.titulo()));
+        Collator collator = Collator.getInstance(new Locale("pt", "BR"));
+        resultado.sort((a, b) -> collator.compare(a.titulo(),b.titulo()));
         return resultado;
     }
 
