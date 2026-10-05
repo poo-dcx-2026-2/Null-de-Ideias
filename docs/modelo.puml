@@ -1,8 +1,7 @@
 @startuml
 
-
 ' =========================================================
-' ENUM
+' ENUMERAÇÕES
 ' =========================================================
 
 enum StatusExemplar {
@@ -10,6 +9,12 @@ enum StatusExemplar {
     EMPRESTADO
     RESERVADO
     INDISPONIVEL
+}
+
+enum StatusEmprestimo {
+    ATIVO
+    DEVOLVIDO
+    ATRASADO
 }
 
 
@@ -29,19 +34,14 @@ class Item {
 
     + getCodigo() : String
     + setCodigo(codigo : String) : void
-
     + getTitulo() : String
     + setTitulo(titulo : String) : void
-
     + getAutoria() : String
     + setAutoria(autoria : String) : void
-
     + getCategoria() : String
     + setCategoria(categoria : String) : void
-
     + getAno() : int
     + setAno(ano : int) : void
-
     + getExemplares() : List<Exemplar>
 }
 
@@ -55,17 +55,15 @@ class Exemplar {
 
     + getTombo() : String
     + setTombo(tombo : String) : void
-
     + getItem() : Item
     + setItem(item : Item) : void
-
     + getStatus() : StatusExemplar
     + setStatus(status : StatusExemplar) : void
 }
 
 
 ' =========================================================
-' CLASSE PRINCIPAL
+' BIBLIOTECA
 ' =========================================================
 
 class BibliotecaInicial {
@@ -78,14 +76,13 @@ class BibliotecaInicial {
     + usuarios() : UsuarioService
     + emprestimos() : EmprestimoService
     + relatorios() : RelatorioService
-
     + salvar() : void
     + carregar() : void
 }
 
 
 ' =========================================================
-' SERVIÇO DE ACERVO
+' ACERVO
 ' =========================================================
 
 class AcervoEmMemoria {
@@ -109,7 +106,7 @@ class AcervoEmMemoria {
 
 
 ' =========================================================
-' SERVIÇO DE USUÁRIOS
+' USUÁRIOS
 ' =========================================================
 
 class UsuariosEmMemoria {
@@ -125,7 +122,7 @@ class UsuariosEmMemoria {
 
 
 ' =========================================================
-' SERVIÇO DE EMPRÉSTIMOS
+' EMPRÉSTIMOS
 ' =========================================================
 
 class EmprestimosNaoImplementados {
@@ -141,7 +138,7 @@ class EmprestimosNaoImplementados {
 
 
 ' =========================================================
-' SERVIÇO DE RELATÓRIOS
+' RELATÓRIOS
 ' =========================================================
 
 class RelatoriosNaoImplementados {
@@ -155,7 +152,7 @@ class RelatoriosNaoImplementados {
 
 
 ' =========================================================
-' INTERFACES / CONTRATOS
+' INTERFACES
 ' =========================================================
 
 interface Biblioteca {
@@ -210,33 +207,67 @@ interface RelatorioService {
 
 
 ' =========================================================
-' CLASSES VIEW
+' RECORDS / VIEWS
 ' =========================================================
 
-class ItemView {
+class ItemView <<record>> {
+    + codigo : String
+    + titulo : String
+    + autoria : String
+    + categoria : String
+    + ano : int
+    + totalDeExemplares : int
+    + exemplaresDisponiveis : int
 }
 
-class ExemplarView {
+
+class ExemplarView <<record>> {
+    + tombo : String
+    + codigoDoItem : String
+    + status : StatusExemplar
 }
 
-class UsuarioView {
+
+class UsuarioView <<record>> {
+    + matricula : String
+    + nome : String
+    + ativo : boolean
+    + emprestimosAtivos : int
 }
 
-class EmprestimoView {
+
+class EmprestimoView <<record>> {
+    + id : String
+    + tombo : String
+    + matricula : String
+    + dataDoEmprestimo : LocalDate
+    + dataPrevistaDeDevolucao : LocalDate
+    + dataDaDevolucao : LocalDate
+    + status : StatusEmprestimo
 }
 
-class ReservaView {
+
+class ReservaView <<record>> {
+    + id : String
+    + codigoDoItem : String
+    + matricula : String
+    + dataDaReserva : LocalDate
+    + posicaoNaFila : int
 }
 
 
 ' =========================================================
-' RELACIONAMENTOS DE HERANÇA / IMPLEMENTAÇÃO
+' IMPLEMENTAÇÕES DOS CONTRATOS
 ' =========================================================
 
 BibliotecaInicial ..|> Biblioteca
+
 AcervoEmMemoria ..|> AcervoService
+
 UsuariosEmMemoria ..|> UsuarioService
+
 EmprestimosNaoImplementados ..|> EmprestimoService
+
 RelatoriosNaoImplementados ..|> RelatorioService
 
 
@@ -245,8 +276,10 @@ RelatoriosNaoImplementados ..|> RelatorioService
 ' =========================================================
 
 Item "1" *-- "0..*" Exemplar : possui
+
 Exemplar --> Item : pertence a
-Exemplar --> StatusExemplar : possui estado
+
+Exemplar --> StatusExemplar : status
 
 
 ' =========================================================
@@ -254,36 +287,77 @@ Exemplar --> StatusExemplar : possui estado
 ' =========================================================
 
 BibliotecaInicial *-- AcervoEmMemoria : possui
+
 BibliotecaInicial *-- UsuariosEmMemoria : possui
+
 BibliotecaInicial *-- EmprestimosNaoImplementados : possui
+
 BibliotecaInicial *-- RelatoriosNaoImplementados : possui
 
 
 ' =========================================================
-' RELACIONAMENTOS DOS SERVIÇOS
+' RELACIONAMENTOS DO ACERVO
 ' =========================================================
 
 AcervoEmMemoria --> Item : gerencia
-AcervoEmMemoria --> ItemView : cria
-AcervoEmMemoria --> ExemplarView : cria
 
-RelatoriosNaoImplementados --> ItemView : utiliza
-RelatoriosNaoImplementados --> UsuarioView : utiliza
-RelatoriosNaoImplementados --> EmprestimoView : utiliza
+AcervoEmMemoria ..> ItemView : retorna
 
-EmprestimosNaoImplementados --> EmprestimoView : utiliza
-EmprestimosNaoImplementados --> ReservaView : utiliza
-
-UsuariosEmMemoria --> UsuarioView : cria
+AcervoEmMemoria ..> ExemplarView : retorna
 
 
 ' =========================================================
-' BIBLIOTECA E SEUS CONTRATOS
+' RELACIONAMENTOS DOS USUÁRIOS
+' =========================================================
+
+UsuariosEmMemoria ..> UsuarioView : retorna
+
+
+' =========================================================
+' RELACIONAMENTOS DOS EMPRÉSTIMOS
+' =========================================================
+
+EmprestimosNaoImplementados ..> EmprestimoView : retorna
+
+EmprestimosNaoImplementados ..> ReservaView : retorna
+
+EmprestimosNaoImplementados ..> Item : utiliza
+
+EmprestimosNaoImplementados ..> Exemplar : utiliza
+
+EmprestimosNaoImplementados ..> UsuarioView : utiliza
+
+
+' =========================================================
+' RELACIONAMENTOS DOS RELATÓRIOS
+' =========================================================
+
+RelatoriosNaoImplementados ..> ItemView : utiliza
+
+RelatoriosNaoImplementados ..> UsuarioView : utiliza
+
+RelatoriosNaoImplementados ..> EmprestimoView : utiliza
+
+
+' =========================================================
+' RELACIONAMENTOS DAS VIEWS
+' =========================================================
+
+ExemplarView --> StatusExemplar
+
+EmprestimoView --> StatusEmprestimo
+
+
+' =========================================================
+' BIBLIOTECA UTILIZA OS SERVIÇOS
 ' =========================================================
 
 BibliotecaInicial ..> AcervoService : utiliza
+
 BibliotecaInicial ..> UsuarioService : utiliza
+
 BibliotecaInicial ..> EmprestimoService : utiliza
+
 BibliotecaInicial ..> RelatorioService : utiliza
 
 
