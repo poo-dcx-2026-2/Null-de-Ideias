@@ -111,7 +111,7 @@ class AcervoTest {
     // ------------------------------------------------------------------
 
     @Test
-    @Disabled("Entrega 1: implementar adicionarExemplar e listarExemplares")
+    //@Disabled("Entrega 1: implementar adicionarExemplar e listarExemplares")
     @DisplayName("exemplar adicionado entra como DISPONIVEL e conta no item")
     void adicionarExemplar() throws BibliotecaException {
         biblioteca.acervo().cadastrarItem("L1", "Java Efetivo", "Bloch", "livro", 2019);
@@ -127,7 +127,7 @@ class AcervoTest {
     }
 
     @Test
-    @Disabled("Entrega 1: implementar adicionarExemplar")
+    //@Disabled("Entrega 1: implementar adicionarExemplar")
     @DisplayName("tombo é único no acervo inteiro, não apenas dentro do item")
     void tomboDuplicadoEntreItensDiferentes() throws BibliotecaException {
         biblioteca.acervo().cadastrarItem("L1", "Java Efetivo", "Bloch", "livro", 2019);
@@ -139,7 +139,7 @@ class AcervoTest {
     }
 
     @Test
-    @Disabled("Entrega 1: implementar adicionarExemplar")
+    //@Disabled("Entrega 1: implementar adicionarExemplar")
     @DisplayName("não se adiciona exemplar a item que não existe")
     void exemplarDeItemInexistente() {
         assertThrows(RecursoNaoEncontradoException.class,
@@ -147,7 +147,7 @@ class AcervoTest {
     }
 
     @Test
-    @Disabled("Entrega 1: implementar buscarPorTitulo")
+    //@Disabled("Entrega 1: implementar buscarPorTitulo")
     @DisplayName("busca por título ignora maiúsculas e aceita trecho")
     void buscarPorTitulo() throws BibliotecaException {
         biblioteca.acervo().cadastrarItem("L1", "Java Efetivo", "Bloch", "livro", 2019);
@@ -158,7 +158,7 @@ class AcervoTest {
     }
 
     @Test
-    @Disabled("Entrega 1: implementar buscarPorTitulo")
+    //@Disabled("Entrega 1: implementar buscarPorTitulo")
     @DisplayName("busca sem resultado devolve lista vazia, não exceção")
     void buscarPorTituloSemResultado() {
         assertEquals(List.of(), biblioteca.acervo().buscarPorTitulo("inexistente"));

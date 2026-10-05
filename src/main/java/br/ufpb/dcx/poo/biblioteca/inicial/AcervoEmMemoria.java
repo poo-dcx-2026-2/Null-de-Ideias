@@ -63,15 +63,15 @@ public class AcervoEmMemoria implements AcervoService {
     }
 
     @Override
-    public List<ItemView> buscarPorTitulo(String trecho) {
+    public List<ItemView> buscarPorTitulo(String trecho){
         List<ItemView> resultado = new ArrayList<>();
         for (Item item : itens){
-            if (item.getTitulo().equalsIgnoreCase(trecho)){
+            if (item.getTitulo().toLowerCase().contains(trecho.toLowerCase())){
                 resultado.add(paraView(item));
             }
         }
         return resultado;
-        // TODO: Implementa as exceções.
+
     }
 
     @Override
@@ -132,7 +132,7 @@ public class AcervoEmMemoria implements AcervoService {
      */
     private Item localizar(String codigo) {
         for (Item item : itens) {
-            if (item.getCodigo() == codigo) {
+            if (item.getCodigo().equals( codigo)) {
                 return item;
             }
         }
