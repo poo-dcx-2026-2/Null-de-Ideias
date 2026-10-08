@@ -36,10 +36,14 @@ public class AcervoEmMemoria implements AcervoService {
     public ItemView buscarItem(String codigo) throws RecursoNaoEncontradoException {
         exigirTextoPreenchido(codigo, "codigo");
         Item item = localizar(codigo);
+        verificacaoDeItemNaoEncontra(codigo, item);
+        return paraView(item);
+    }
+
+    private static void verificacaoDeItemNaoEncontra(String codigo, Item item) throws RecursoNaoEncontradoException {
         if (item == null) {
             throw new RecursoNaoEncontradoException("Item não encontrado: " + codigo);
         }
-        return paraView(item);
     }
 
     @Override
@@ -77,9 +81,7 @@ public class AcervoEmMemoria implements AcervoService {
         exigirTextoPreenchido(codigoDoItem, "codigo do item");
         exigirTextoPreenchido(tombo, "tombo");
         Item item = localizar(codigoDoItem);
-        if (item == null) {
-            throw new RecursoNaoEncontradoException("Item não encontrado: " + codigoDoItem);
-        }
+        verificacaoDeItemNaoEncontra(codigoDoItem, item);
         for (Item outro : itens) {
             for (Exemplar exemplar : outro.getExemplares()) {
                 if (exemplar.getTombo().equals(tombo)) {
@@ -97,11 +99,9 @@ public class AcervoEmMemoria implements AcervoService {
             throws RecursoNaoEncontradoException {
             exigirTextoPreenchido(codigoDoItem, "codigo do item");
             Item item = localizar(codigoDoItem);
-            if (item == null) {
-                throw new RecursoNaoEncontradoException("Item não encontrado: " + codigoDoItem);
-            }
+        verificacaoDeItemNaoEncontra(codigoDoItem, item);
 
-            List<ExemplarView> listaDeExemplares = new ArrayList<>();
+        List<ExemplarView> listaDeExemplares = new ArrayList<>();
 
             for (Exemplar exemplarAtual : item.getExemplares()) {
                 listaDeExemplares.add(new ExemplarView(
