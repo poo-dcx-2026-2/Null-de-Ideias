@@ -21,6 +21,7 @@ public class UsuariosEmMemoria implements UsuarioService {
 
     private final List<String> matriculas = new ArrayList<>();
     private final List<String> nomes = new ArrayList<>();
+    // modificar a estrutura destas listas criar uma nova class para comporta o atributor List<map> que sera composto por matriculas e nomes
 
     @Override
     public void cadastrarUsuario(String matricula, String nome)
