@@ -91,7 +91,16 @@ Sua equipe escolhe um acervo próprio: jogos, filmes, quadrinhos, instrumentos, 
 
 ### Nossa extensão
 
-> Substitua esta seção: qual acervo, qual regra de negócio própria, o que ela muda no comportamento do sistema.
+ Substitua esta seção: qual acervo, qual regra de negócio própria, o que ela muda no comportamento do sistema.
+ 
+Acervo : Filmes
+| Regras de negócio própria |
+|-------------------------|
+| Classificação indicativa |
+| Penalidade por atraso   |
+| Lista de espera         |
+| Filmes indisponíveis    |
+| Limite de empréstimos |
 
 ---
 
