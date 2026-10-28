@@ -1,5 +1,7 @@
 package br.ufpb.dcx.poo.biblioteca.inicial;
 
+import br.ufpb.dcx.poo.biblioteca.contrato.StatusExemplar;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -44,4 +46,29 @@ public class Item {
     public void setAno(int ano) { this.ano = ano; }
 
     public List<Exemplar> getExemplares() { return exemplares; }
+
+    public int exemplares() { return exemplares.size(); }
+
+    public int exemplaresDisponiveis(){
+        int disponiveis = 0;
+        for (Exemplar exemplar : exemplares) {
+            if (exemplar.getStatus() == StatusExemplar.DISPONIVEL) {
+                disponiveis++;
+            }
+        }
+        return disponiveis;
+    }
+
+    public void adicionarExemplar(Exemplar exemplar) {
+        exemplares.add(exemplar);
+    }
+
+    public boolean exemplarComTombo(String tombo) {
+        for (Exemplar exemplar : exemplares) {
+            if (exemplar.getTombo().equals(tombo)) {
+                return true;
+            }
+        }
+        return false;
+    }
 }
