@@ -22,7 +22,8 @@ Uma linha por uso relevante. Se não houve uso, escreva "Não houve uso de ferra
 | Data | Ferramenta | Finalidade | Arquivos/trechos afetados | O que foi revisado e alterado por vocês |
 |-|-|--|---|---|
 | 30/09 | ChatGPT    | Ideias para a criação das regras autorais | DECLARACAO-DE-USO-DE-IA/Acervo e a regra autoral | As regras autorais |
-
+|05/10 | ChatGPT | Auxiliar na criação do diagrama | modelo.puml | modelo.puml |
+|05/10 | IA do google | ajudar nas solusoes dos metodos | AcervoEmMemoria | AcervoEmMemoria |
 ## Acervo e a regra autoral
 
  | Acervo | Regras autorais         |
