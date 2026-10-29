@@ -68,6 +68,6 @@ public class UsuariosEmMemoria implements UsuarioService {
     }
 
     private UsuarioView paraView(Usuario usuario) {
-        return new UsuarioView(usuario.getMatricula(), usuario.getNome(), true, 0)
+        return new UsuarioView(usuario.getMatricula(), usuario.getNome(), true, 0);
     }
 }
