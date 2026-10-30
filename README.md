@@ -1,24 +1,29 @@
 # Sistema de Gestão de Biblioteca/Acervo
 
-Projeto incremental da disciplina de **Programação Orientada a Objetos** — DCX/CCAE/UFPB.
+Projeto incremental da disciplina de Programação Orientada a Objetos — DCX/CCAE/UFPB, 2026.2.
 
-Este repositório é o ponto de partida do seu projeto. Ele compila, executa e tem testes passando, mas está **deliberadamente incompleto** e contém decisões de design questionáveis. Encontrá-las, justificá-las e corrigi-las faz parte da disciplina.
+O sistema implementa, em memória, o contrato definido no pacote contrato para um acervo de filmes.
 
 ---
+## Equipe
+
+| Nome                        | Matrícula | GitHub |
+|-----------------------------|---|---|
+| Andrêciele Ferreira Da Cruz | 20250104904 | andreciele |
+| Ellen Cristine Da Silva     | 20250114268 | ellensilva15 |
+| Mylena Paulino De Lima      | 20250138232 | Mylena-p  |
 
 ## Começando
 
-Você precisa de **JDK 21** e **Maven**. No IntelliJ IDEA, abra a pasta do projeto e ele reconhece o `pom.xml` sozinho.
+Requisitos: JDK 21 e Maven (no IntelliJ IDEA basta abrir a pasta do projeto).
 
-```bash
-mvn -B verify      # compila e roda os testes
+mvn -B verify      # compila, roda os testes e empacota
 mvn -B test        # só os testes
-```
 
-Se tudo estiver certo, você verá `Tests run: 19, Failures: 0, Errors: 0, Skipped: 5`.
+Resultado esperado:
 
-Os 5 pulados são os testes marcados com `@Disabled`: eles cobrem o que você ainda vai implementar. Remova a anotação de cada um quando implementar o método correspondente.
-
+Tests run: 19 , Failures: 0, Errors: 0, Skipped: 0
+BUILD SUCCESS
 ---
 
 ## Mapa do projeto
@@ -38,10 +43,11 @@ src/main/java/br/ufpb/dcx/poo/biblioteca/
 ├── Fabrica.java       ← nome e assinatura congelados; o corpo é seu
 │
 └── inicial/           ← ponto de partida; altere, mova, renomeie ou apague
-    ├── Item.java
-    ├── Exemplar.java
-    ├── AcervoEmMemoria.java
-    ├── UsuariosEmMemoria.java
+    ├── Item.java                    item do acervo e seus exemplares
+    ├── Exemplar.java                cópia física do item, identificada pelo tombo
+    ├── Usuario.java                 matrícula, nome, ativo e empréstimos ativos
+    ├── AcervoEmMemoria.java         serviço do acervo
+    ├── UsuariosEmMemoria.java       serviço de usuários
     ├── EmprestimosNaoImplementados.java
     ├── RelatoriosNaoImplementados.java
     └── BibliotecaInicial.java
@@ -52,6 +58,34 @@ dados/                ← arquivos de exemplo
 ```
 
 ---
+
+## Decisões de modelagem e justificativa das coleções
+
+A identidade de um usuário é definida na construção e não muda depois: em Usuario, a matrícula fica em um campo final, sem setter. O nome pode mudar (para permitir nome social), e o estado de ativo e a contagem de empréstimos só mudam por métodos próprios (setAtivo, incrementarEmprestimosAtivos, decrementarEmprestimosAtivos).
+
+| Estrutura              | Onde | Uso|	Justificativa |
+|------------------------|---|---|---|
+| `List<Item>`           |	AcervoEmMemoria|	Itens do acervo|	Mantém a ordem de cadastro e é a estrutura mais simples para um acervo em memória de poucos itens. A busca por código (localizar) percorre a lista, o que é aceitável nesse volume. Com um acervo grande, um Map pelo código seria mais eficiente.|
+| `List<Exemplar>`       |	Item	|Exemplares que pertencem a um item	|Representa a composição item–exemplar: o exemplar só existe ligado a um item, e a ordem de cadastro é preservada.
+| `Map<String, Usuario>` |	UsuariosEmMemoria|	Usuários indexados pela matrícula|	Buscar por matrícula e checar matrícula repetida são operações diretas, sem varrer a coleção. Elimina as duas listas paralelas que existiam (matrículas e nomes) e mantém matrícula e nome no mesmo objeto.|
+
+As consultas devolvem ItemView, ExemplarView e UsuarioView (tipos do contrato), e não as entidades internas. Assim o estado do domínio não vaza para quem chama os serviços.
+
+---
+
+## Relato do defeito
+
+**Defeito:** o método `localizar` (`AcervoEmMemoria`) comparava o código do item com `==`, que compara objetos e não conteúdo. Um código com o mesmo texto, mas vindo de outro objeto `String`, não era reconhecido: `buscarItem` não achava o item e `cadastrarItem` aceitava código repetido. Os testes iniciais passavam porque usavam literais, que o Java reaproveita como o mesmo objeto. O defeito já estava no código inicial (commit `32463b5`).
+
+**Como foi reproduzido:** cadastrando o item `"L1"` e buscando com `new String("L1")`.
+
+**Como foi encontrado:** Durante a análise e os testes do método `localizar`, foi identificado que a comparação dos códigos utilizava `==`, causando falhas quando o código pesquisado era uma String com o mesmo conteúdo, mas com uma referência de memória diferente.
+
+**Correção:** commit `94613dc` (05/10/2026, Andrêciele), que trocou `==` por `.equals(...)`.
+
+**Teste de regressão:** `buscarItemComCodigoMontadoEmTempoDeExecucao`, em `AcervoTest`, adicionado depois da correção. Commit: `7e92820` (30/10/2026, Mylena).
+
+--- 
 
 ## As duas regras
 
@@ -87,20 +121,19 @@ Isso é proposital. Encontrar esse tipo de defeito — reproduzir, escrever o te
 
 ## Extensão autoral
 
-Sua equipe escolhe um acervo próprio: jogos, filmes, quadrinhos, instrumentos, obras locais, recursos de laboratório. A extensão vive **por fora** do contrato — novos tipos, novos serviços, novas regras — e precisa incluir ao menos **uma regra de negócio própria**, documentada abaixo, que os testes de correção não conhecem e que você demonstra na defesa.
+* Acervo escolhido: Filmes
 
-### Nossa extensão
+    * Regras de negócio própria
 
- Substitua esta seção: qual acervo, qual regra de negócio própria, o que ela muda no comportamento do sistema.
- 
-Acervo : Filmes
-| Regras de negócio própria |
-|-------------------------|
-| Classificação indicativa |
-| Penalidade por atraso   |
-| Lista de espera         |
-| Filmes indisponíveis    |
-| Limite de empréstimos |
+          1.Classificação indicativa: Cada filme tem uma classificação etária.
+    * 
+          2.Penalidade por atraso: Se o filme é devolvido depois da data prevista (prazo de 14 dias), o usuário fica suspenso por um número de dias proporcional ao atraso. Durante a suspensão, ele não consegue emprestar.
+    * 
+          3.Lista de espera: Quando todos os exemplares de um filme estão emprestados, o usuário entra em uma fila daquele filme. Ao devolver, o exemplar fica reservado para o primeiro da fila. 
+    * 
+          4.Filmes indisponíveis: Um exemplar baixado (perdido, danificado ou retirado) passa a INDISPONIVEL e não pode mais ser emprestado. O filme continua no acervo, mas conta como sem cópia disponível.
+    * 
+          5.Limite de empréstimos: o sistema impede que o usuário tenha mais empréstimos ativos do que o limite permitido. 
 
 ---
 
@@ -109,12 +142,3 @@ Acervo : Filmes
 O uso é permitido como apoio, desde que declarado em [`DECLARACAO-DE-USO-DE-IA.md`](DECLARACAO-DE-USO-DE-IA.md). Você continua responsável por explicar, testar e adaptar todo o código entregue — inclusive em uma alteração feita presencialmente, sem consulta, na defesa da Entrega 3.
 
 ---
-
-## Equipe
-
-| Nome | Matrícula | GitHub |
-|---|---|---|
-| Mylena  | 20250138232 | Mylena-p  |
-| Andrêciele | 20250104904 | andreciele |
-| Ellen | 20250114268 | ellensilva15 |
-
