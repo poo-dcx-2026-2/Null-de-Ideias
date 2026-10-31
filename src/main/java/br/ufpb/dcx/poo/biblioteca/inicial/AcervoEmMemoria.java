@@ -35,10 +35,7 @@ public class AcervoEmMemoria implements AcervoService {
     @Override
     public ItemView buscarItem(String codigo) throws RecursoNaoEncontradoException {
         exigirTextoPreenchido(codigo, "codigo");
-        Item item = localizar(codigo);
-        if (item == null) {
-            throw new RecursoNaoEncontradoException("Item não encontrado: " + codigo);
-        }
+        Item item = buscarItemOuFalhar(codigo);
         return paraView(item);
     }
 
@@ -76,10 +73,7 @@ public class AcervoEmMemoria implements AcervoService {
             throws RecursoNaoEncontradoException, RecursoDuplicadoException{
         exigirTextoPreenchido(codigoDoItem, "codigo do item");
         exigirTextoPreenchido(tombo, "tombo");
-        Item item = localizar(codigoDoItem);
-        if (item == null) {
-            throw new RecursoNaoEncontradoException("Item não encontrado: " + codigoDoItem);
-        }
+        Item item = buscarItemOuFalhar(codigoDoItem);
         for (Item outro : itens) {
                 if (outro.exemplarComTombo(tombo)) {
                     throw new RecursoDuplicadoException("Já existe exemplar com o tombo " + tombo);
@@ -90,16 +84,21 @@ public class AcervoEmMemoria implements AcervoService {
 
     }
 
+    private Item buscarItemOuFalhar(String codigoDoItem) throws RecursoNaoEncontradoException {
+        Item item = localizar(codigoDoItem);
+        if (item == null) {
+            throw new RecursoNaoEncontradoException("Item não encontrado: " + codigoDoItem);
+        }
+        return item;
+    }
+
     @Override
     public List<ExemplarView> listarExemplares(String codigoDoItem)
             throws RecursoNaoEncontradoException {
             exigirTextoPreenchido(codigoDoItem, "codigo do item");
-            Item item = localizar(codigoDoItem);
-            if (item == null) {
-                throw new RecursoNaoEncontradoException("Item não encontrado: " + codigoDoItem);
-            }
+        Item item = buscarItemOuFalhar(codigoDoItem);
 
-            List<ExemplarView> listaDeExemplares = new ArrayList<>();
+        List<ExemplarView> listaDeExemplares = new ArrayList<>();
 
             for (Exemplar exemplarAtual : item.getExemplares()) {
                 listaDeExemplares.add(new ExemplarView(

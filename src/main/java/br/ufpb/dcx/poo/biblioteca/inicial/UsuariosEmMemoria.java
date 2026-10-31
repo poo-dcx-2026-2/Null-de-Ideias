@@ -10,13 +10,6 @@ import br.ufpb.dcx.poo.biblioteca.contrato.excecoes.OperacaoNaoPermitidaExceptio
 import br.ufpb.dcx.poo.biblioteca.contrato.excecoes.RecursoDuplicadoException;
 import br.ufpb.dcx.poo.biblioteca.contrato.excecoes.RecursoNaoEncontradoException;
 
-/**
- * Implementação inicial e parcial dos usuários.
- *
- * <p>Não existe classe de domínio para o usuário: os dados estão soltos em listas
- * paralelas. É proposital. Uma das primeiras decisões da Entrega 1 é definir se
- * isso deve continuar assim.</p>
- */
 public class UsuariosEmMemoria implements UsuarioService {
 
     private final List<String> matriculas = new ArrayList<>();
@@ -27,12 +20,9 @@ public class UsuariosEmMemoria implements UsuarioService {
     public void cadastrarUsuario(String matricula, String nome)
             throws RecursoDuplicadoException {
 
-        if (matricula == null || matricula.isBlank()) {
-            throw new DadosInvalidosException("A matrícula é obrigatória.");
-        }
-        if (nome == null || nome.isBlank()) {
-            throw new DadosInvalidosException("O nome é obrigatório.");
-        }
+        exigirTextoPreenchido(matricula, "matricula");
+        exigirTextoPreenchido(nome, "nome");
+
         if (matriculas.contains(matricula)) {
             throw new RecursoDuplicadoException("Já existe usuário com a matrícula " + matricula);
         }
@@ -46,14 +36,14 @@ public class UsuariosEmMemoria implements UsuarioService {
         if (posicao < 0) {
             throw new RecursoNaoEncontradoException("Usuário não encontrado: " + matricula);
         }
-        return new UsuarioView(matriculas.get(posicao), nomes.get(posicao), true, 0);
+        return paraView(posicao);
     }
 
     @Override
     public List<UsuarioView> listarUsuarios() {
         List<UsuarioView> resultado = new ArrayList<>();
         for (int i = 0; i < matriculas.size(); i++) {
-            resultado.add(new UsuarioView(matriculas.get(i), nomes.get(i), true, 0));
+            resultado.add(paraView(i));
         }
         resultado.sort((a, b) -> a.nome().compareToIgnoreCase(b.nome()));
         return resultado;
@@ -68,5 +58,15 @@ public class UsuariosEmMemoria implements UsuarioService {
     @Override
     public void reativarUsuario(String matricula) throws RecursoNaoEncontradoException {
         throw new UnsupportedOperationException("Entrega 2: implementar reativarUsuario");
+    }
+
+    private static void exigirTextoPreenchido(String valor, String campo) {
+        if (valor == null || valor.isBlank()) {
+            throw new DadosInvalidosException("O campo " + campo + " é obrigatório.");
+        }
+    }
+
+    private UsuarioView paraView(int posicao) {
+        return new  UsuarioView(matriculas.get(posicao), nomes.get(posicao), true, 0);
     }
 }
