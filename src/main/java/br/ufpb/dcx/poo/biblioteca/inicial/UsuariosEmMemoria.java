@@ -9,13 +9,7 @@ import br.ufpb.dcx.poo.biblioteca.contrato.excecoes.OperacaoNaoPermitidaExceptio
 import br.ufpb.dcx.poo.biblioteca.contrato.excecoes.RecursoDuplicadoException;
 import br.ufpb.dcx.poo.biblioteca.contrato.excecoes.RecursoNaoEncontradoException;
 
-/**
- * Implementação inicial e parcial dos usuários.
- *
- * <p>Não existe classe de domínio para o usuário: os dados estão soltos em listas
- * paralelas. É proposital. Uma das primeiras decisões da Entrega 1 é definir se
- * isso deve continuar assim.</p>
- */
+
 public class UsuariosEmMemoria implements UsuarioService {
 
     private final Map<String, Usuario> usuarios = new LinkedHashMap<>();
@@ -63,7 +57,7 @@ public class UsuariosEmMemoria implements UsuarioService {
 
     private static void exigirTextoPreenchido(String valor, String campo) {
         if (valor == null || valor.isBlank()) {
-            throw new DadosInvalidosException(" O campo " + campo + " é obrigatório.");
+            throw new DadosInvalidosException("O campo " + campo + " é obrigatório.");
         }
     }
 
