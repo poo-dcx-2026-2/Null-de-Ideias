@@ -81,14 +81,12 @@ public class AcervoEmMemoria implements AcervoService {
             throw new RecursoNaoEncontradoException("Item não encontrado: " + codigoDoItem);
         }
         for (Item outro : itens) {
-            for (Exemplar exemplar : outro.getExemplares()) {
-                if (exemplar.getTombo().equals(tombo)) {
+                if (outro.exemplarComTombo(tombo)) {
                     throw new RecursoDuplicadoException("Já existe exemplar com o tombo " + tombo);
                 }
-            }
         }
 
-        item.getExemplares().add(new Exemplar(tombo, item));
+        item.adicionarExemplar(new Exemplar(tombo, item));
 
     }
 
@@ -129,22 +127,17 @@ public class AcervoEmMemoria implements AcervoService {
         return null;
     }
 
-    private ItemView paraView(Item item) {
-        int disponiveis = 0;
-        for (Exemplar exemplar : item.getExemplares()) {
-            if (exemplar.getStatus() == StatusExemplar.DISPONIVEL) {
-                disponiveis++;
-            }
+        private ItemView paraView(Item item){
+            return new ItemView(
+                    item.getCodigo(),
+                    item.getTitulo(),
+                    item.getAutoria(),
+                    item.getCategoria(),
+                    item.getAno(),
+                    item.exemplares(),
+                    item.exemplaresDisponiveis());
         }
-        return new ItemView(
-                item.getCodigo(),
-                item.getTitulo(),
-                item.getAutoria(),
-                item.getCategoria(),
-                item.getAno(),
-                item.getExemplares().size(),
-                disponiveis);
-    }
+
 
     private static void exigirTextoPreenchido(String valor, String campo) {
         if (valor == null || valor.isBlank()) {
