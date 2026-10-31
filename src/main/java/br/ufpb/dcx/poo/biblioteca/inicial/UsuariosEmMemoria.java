@@ -1,7 +1,6 @@
 package br.ufpb.dcx.poo.biblioteca.inicial;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 import br.ufpb.dcx.poo.biblioteca.contrato.UsuarioService;
 import br.ufpb.dcx.poo.biblioteca.contrato.UsuarioView;
@@ -10,40 +9,36 @@ import br.ufpb.dcx.poo.biblioteca.contrato.excecoes.OperacaoNaoPermitidaExceptio
 import br.ufpb.dcx.poo.biblioteca.contrato.excecoes.RecursoDuplicadoException;
 import br.ufpb.dcx.poo.biblioteca.contrato.excecoes.RecursoNaoEncontradoException;
 
+
 public class UsuariosEmMemoria implements UsuarioService {
 
-    private final List<String> matriculas = new ArrayList<>();
-    private final List<String> nomes = new ArrayList<>();
-    // modificar a estrutura destas listas criar uma nova class para comporta o atributor List<map> que sera composto por matriculas e nomes
+    private final Map<String, Usuario> usuarios = new LinkedHashMap<>();
 
     @Override
     public void cadastrarUsuario(String matricula, String nome)
             throws RecursoDuplicadoException {
-
         exigirTextoPreenchido(matricula, "matricula");
         exigirTextoPreenchido(nome, "nome");
-
-        if (matriculas.contains(matricula)) {
+        if (usuarios.containsKey(matricula)) {
             throw new RecursoDuplicadoException("Já existe usuário com a matrícula " + matricula);
         }
-        matriculas.add(matricula);
-        nomes.add(nome);
+        usuarios.put(matricula, new Usuario(matricula, nome));
     }
 
     @Override
     public UsuarioView buscarUsuario(String matricula) throws RecursoNaoEncontradoException {
-        int posicao = matriculas.indexOf(matricula);
-        if (posicao < 0) {
+       Usuario usuario = usuarios.get(matricula);
+        if (usuario ==null) {
             throw new RecursoNaoEncontradoException("Usuário não encontrado: " + matricula);
         }
-        return paraView(posicao);
+        return paraView(usuario);
     }
 
     @Override
     public List<UsuarioView> listarUsuarios() {
         List<UsuarioView> resultado = new ArrayList<>();
-        for (int i = 0; i < matriculas.size(); i++) {
-            resultado.add(paraView(i));
+        for (Usuario usuario : usuarios.values()) {
+            resultado.add(paraView(usuario));
         }
         resultado.sort((a, b) -> a.nome().compareToIgnoreCase(b.nome()));
         return resultado;
@@ -66,7 +61,8 @@ public class UsuariosEmMemoria implements UsuarioService {
         }
     }
 
-    private UsuarioView paraView(int posicao) {
-        return new  UsuarioView(matriculas.get(posicao), nomes.get(posicao), true, 0);
+    private UsuarioView paraView(Usuario usuario) {
+        return new UsuarioView
+                (usuario.getMatricula(), usuario.getNome(), usuario.isAtivo(), usuario.getEmprestimosAtivos());
     }
 }

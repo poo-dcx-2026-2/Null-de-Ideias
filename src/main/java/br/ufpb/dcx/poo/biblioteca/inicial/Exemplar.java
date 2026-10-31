@@ -20,11 +20,11 @@ public class Exemplar {
     }
 
     public String getTombo() { return tombo; }
-    public void setTombo(String tombo) { this.tombo = tombo; }
+    public void setTombo(String tombo) { this.tombo = tombo; }//Generalidade especulativa
 
     public Item getItem() { return item; }
-    public void setItem(Item item) { this.item = item; }
+    public void setItem(Item item) { this.item = item; }//Generalidade especulativa
 
     public StatusExemplar getStatus() { return status; }
-    public void setStatus(StatusExemplar status) { this.status = status; }
+    public void setStatus(StatusExemplar status) { this.status = status; }//Generalidade especulativa
 }
