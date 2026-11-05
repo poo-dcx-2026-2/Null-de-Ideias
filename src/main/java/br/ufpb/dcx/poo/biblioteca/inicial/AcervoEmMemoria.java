@@ -8,7 +8,6 @@ import java.util.Locale;
 import br.ufpb.dcx.poo.biblioteca.contrato.AcervoService;
 import br.ufpb.dcx.poo.biblioteca.contrato.ExemplarView;
 import br.ufpb.dcx.poo.biblioteca.contrato.ItemView;
-import br.ufpb.dcx.poo.biblioteca.contrato.StatusExemplar;
 import br.ufpb.dcx.poo.biblioteca.contrato.excecoes.DadosInvalidosException;
 import br.ufpb.dcx.poo.biblioteca.contrato.excecoes.OperacaoNaoPermitidaException;
 import br.ufpb.dcx.poo.biblioteca.contrato.excecoes.RecursoDuplicadoException;
@@ -36,14 +35,14 @@ public class AcervoEmMemoria implements AcervoService {
     public ItemView buscarItem(String codigo) throws RecursoNaoEncontradoException {
         exigirTextoPreenchido(codigo, "codigo");
         Item item = buscarItemOuFalhar(codigo);
-        return paraView(item);
+        return item.paraView();
     }
 
     @Override
     public List<ItemView> listarItens() {
         List<ItemView> resultado = new ArrayList<>();
         for (Item item : itens) {
-            resultado.add(paraView(item));
+            resultado.add(item.paraView());
         }
         Collator collator = Collator.getInstance(new Locale("pt", "BR"));
         resultado.sort((a, b) -> collator.compare(a.titulo(),b.titulo()));
@@ -55,8 +54,8 @@ public class AcervoEmMemoria implements AcervoService {
         exigirTextoPreenchido(trecho, "trecho");
         List<ItemView> resultado = new ArrayList<>();
         for (Item item : itens){
-            if (item.getTitulo().toLowerCase().contains(trecho.toLowerCase())){
-                resultado.add(paraView(item));
+            if (item.tituloContem(trecho)) {
+                resultado.add(item.paraView());
             }
         }
         return resultado;
@@ -101,11 +100,7 @@ public class AcervoEmMemoria implements AcervoService {
         List<ExemplarView> listaDeExemplares = new ArrayList<>();
 
             for (Exemplar exemplarAtual : item.getExemplares()) {
-                listaDeExemplares.add(new ExemplarView(
-                        exemplarAtual.getTombo(),
-                        codigoDoItem,
-                        exemplarAtual.getStatus()
-                ));
+                listaDeExemplares.add(exemplarAtual.paraView());
             }
 
             return listaDeExemplares;
@@ -119,24 +114,12 @@ public class AcervoEmMemoria implements AcervoService {
 
     private Item localizar(String codigo) {
         for (Item item : itens) {
-            if (item.getCodigo().equals( codigo)) {
+            if (item.temCodigo( codigo)) {
                 return item;
             }
         }
         return null;
     }
-
-        private ItemView paraView(Item item){
-            return new ItemView(
-                    item.getCodigo(),
-                    item.getTitulo(),
-                    item.getAutoria(),
-                    item.getCategoria(),
-                    item.getAno(),
-                    item.exemplares(),
-                    item.exemplaresDisponiveis());
-        }
-
 
     private static void exigirTextoPreenchido(String valor, String campo) {
         if (valor == null || valor.isBlank()) {
@@ -148,4 +131,6 @@ public class AcervoEmMemoria implements AcervoService {
     List<Item> itens() {
         return itens;
     }
+
+
 }
