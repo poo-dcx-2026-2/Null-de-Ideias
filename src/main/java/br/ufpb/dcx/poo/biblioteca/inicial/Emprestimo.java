@@ -4,7 +4,6 @@ import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.UUID;
 
-import static br.ufpb.dcx.poo.biblioteca.contrato.EmprestimoService.PRAZO_EM_DIAS;
 
 public class Emprestimo {
     private String id;
@@ -13,6 +12,7 @@ public class Emprestimo {
     private LocalDate dataDoEmprestimo;
     private LocalDate dataPrevista;
     private LocalDate dataDaDevolucao;
+    int PRAZO_EM_DIAS = 14;
 
     public Emprestimo( Usuario usuario, String tombo, LocalDate dataDoEmprestimo) {
         this.id = UUID.randomUUID().toString();

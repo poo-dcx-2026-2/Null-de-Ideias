@@ -1,7 +1,7 @@
 package br.ufpb.dcx.poo.biblioteca.inicial;
 import br.ufpb.dcx.poo.biblioteca.contrato.excecoes.LimiteDeEmprestimosExcedidoException;
+import br.ufpb.dcx.poo.biblioteca.contrato.excecoes.OperacaoNaoPermitidaException;
 import br.ufpb.dcx.poo.biblioteca.contrato.excecoes.UsuarioInativoException;
-import static br.ufpb.dcx.poo.biblioteca.contrato.EmprestimoService.LIMITE_DE_EMPRESTIMOS;
 import br.ufpb.dcx.poo.biblioteca.contrato.UsuarioView;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -12,6 +12,8 @@ public class Usuario {
     private String nome;
     private boolean ativo;
     private List<Emprestimo> emprestimos = new ArrayList<>();
+    int LIMITE_DE_EMPRESTIMOS = 3;
+
 
     public Usuario(String matricula, String nome) {
         this.matricula = matricula;
@@ -19,6 +21,7 @@ public class Usuario {
         this.ativo = true;
 
     }
+
     public int emprestimosAtivos() {
         int ativos = 0;
         for (Emprestimo emprestimo : emprestimos) {
@@ -28,9 +31,10 @@ public class Usuario {
         }
         return ativos;
     }
+
     public Emprestimo emprestar(String tombo, LocalDate data) throws UsuarioInativoException, LimiteDeEmprestimosExcedidoException {
         if (emprestimosAtivos() >= LIMITE_DE_EMPRESTIMOS) {
-            throw new LimiteDeEmprestimosExcedidoException("Limite de empréstimos atingido");
+            throw new LimiteDeEmprestimosExcedidoException("Limite de empréstimos Excedido!");
         }
         if (!isAtivo()){
             throw new UsuarioInativoException("Usuario inativo!");
@@ -39,6 +43,21 @@ public class Usuario {
         emprestimos.add(emprestimo);
         return emprestimo;
     }
+
+    public void devolver(String tombo,LocalDate data) throws UsuarioInativoException , OperacaoNaoPermitidaException{
+        Emprestimo emprestimo = new Emprestimo(this,tombo,data);
+        if (!isAtivo()){
+            throw new UsuarioInativoException("Usuario inativo não poder realizar devolução!");
+        }
+        if (emprestimosAtivos()<0){
+            throw new OperacaoNaoPermitidaException("O usuário não possui nenhum empréstimo ativo!");
+        }
+        if(!emprestimos.contains(emprestimo)){
+            throw new OperacaoNaoPermitidaException("Este empréstimo não pertence a este usuário!");
+        }
+        emprestimos.remove(emprestimo);
+    }
+
 
 
     public List<Emprestimo> getEmprestimos() {
