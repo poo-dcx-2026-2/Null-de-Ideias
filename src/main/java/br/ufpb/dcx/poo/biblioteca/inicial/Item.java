@@ -1,6 +1,6 @@
 package br.ufpb.dcx.poo.biblioteca.inicial;
 
-import br.ufpb.dcx.poo.biblioteca.contrato.StatusExemplar;
+import br.ufpb.dcx.poo.biblioteca.contrato.ItemView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -52,7 +52,7 @@ public class Item {
     public int exemplaresDisponiveis(){
         int disponiveis = 0;
         for (Exemplar exemplar : exemplares) {
-            if (exemplar.getStatus() == StatusExemplar.DISPONIVEL) {
+            if (exemplar.isDisponivel()) {
                 disponiveis++;
             }
         }
@@ -65,10 +65,22 @@ public class Item {
 
     public boolean exemplarComTombo(String tombo) {
         for (Exemplar exemplar : exemplares) {
-            if (exemplar.getTombo().equals(tombo)) {
+            if (exemplar.temTombo(tombo)) {
                 return true;
             }
         }
         return false;
+    }
+
+    public boolean temCodigo(String codigo) {
+        return this.codigo.equals(codigo);
+    }
+
+    public boolean tituloContem(String trecho) {
+        return titulo.toLowerCase().contains(trecho.toLowerCase());
+    }
+
+    public ItemView paraView() {
+        return new ItemView(codigo, titulo, autoria, categoria, ano, exemplares(), exemplaresDisponiveis());
     }
 }

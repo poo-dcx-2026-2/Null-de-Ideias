@@ -1,12 +1,11 @@
 package br.ufpb.dcx.poo.biblioteca.inicial;
 import br.ufpb.dcx.poo.biblioteca.contrato.excecoes.LimiteDeEmprestimosExcedidoException;
 import br.ufpb.dcx.poo.biblioteca.contrato.excecoes.UsuarioInativoException;
-
+import static br.ufpb.dcx.poo.biblioteca.contrato.EmprestimoService.LIMITE_DE_EMPRESTIMOS;
+import br.ufpb.dcx.poo.biblioteca.contrato.UsuarioView;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-
-import static br.ufpb.dcx.poo.biblioteca.contrato.EmprestimoService.LIMITE_DE_EMPRESTIMOS;
 
 public class Usuario {
     private final String matricula;
@@ -20,7 +19,7 @@ public class Usuario {
         this.ativo = true;
 
     }
-    public int getEmprestimosAtivos() {
+    public int emprestimosAtivos() {
         int ativos = 0;
         for (Emprestimo emprestimo : emprestimos) {
             if (emprestimo.estaAtivo()) {
@@ -30,7 +29,7 @@ public class Usuario {
         return ativos;
     }
     public Emprestimo emprestar(String tombo, LocalDate data) throws UsuarioInativoException, LimiteDeEmprestimosExcedidoException {
-        if (getEmprestimosAtivos() >= LIMITE_DE_EMPRESTIMOS) {
+        if (emprestimosAtivos() >= LIMITE_DE_EMPRESTIMOS) {
             throw new LimiteDeEmprestimosExcedidoException("Limite de empréstimos atingido");
         }
         if (!isAtivo()){
@@ -68,6 +67,11 @@ public class Usuario {
 
     public void setAtivo(boolean ativo) {
         this.ativo = ativo;
+    }
+
+
+    public UsuarioView paraView() {
+        return new UsuarioView(matricula, nome, ativo, emprestimosAtivos());
     }
 
 }
