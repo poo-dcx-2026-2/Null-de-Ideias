@@ -1,4 +1,7 @@
 package br.ufpb.dcx.poo.biblioteca.inicial;
+
+import br.ufpb.dcx.poo.biblioteca.contrato.UsuarioView;
+
 public class Usuario {
     private final String matricula;
     private String nome;
@@ -47,5 +50,9 @@ public class Usuario {
         if  (emprestimosAtivos > 0) {
             emprestimosAtivos--;
         }
+    }
+
+    public UsuarioView paraView() {
+        return new UsuarioView(matricula, nome, ativo, emprestimosAtivos);
     }
 }

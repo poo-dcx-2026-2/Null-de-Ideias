@@ -1,5 +1,6 @@
 package br.ufpb.dcx.poo.biblioteca.inicial;
 
+import br.ufpb.dcx.poo.biblioteca.contrato.ExemplarView;
 import br.ufpb.dcx.poo.biblioteca.contrato.StatusExemplar;
 
 /**
@@ -27,4 +28,16 @@ public class Exemplar {
 
     public StatusExemplar getStatus() { return status; }
     public void setStatus(StatusExemplar status) { this.status = status; }//Generalidade especulativa
+
+    public boolean isDisponivel() {
+        return status == StatusExemplar.DISPONIVEL;
+    }
+
+    public boolean temTombo(String tombo) {
+        return this.tombo.equals(tombo);
+    }
+
+    public ExemplarView paraView() {
+        return new ExemplarView(tombo, item.getCodigo(), status);
+    }
 }

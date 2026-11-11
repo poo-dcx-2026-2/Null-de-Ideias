@@ -31,14 +31,14 @@ public class UsuariosEmMemoria implements UsuarioService {
         if (usuario ==null) {
             throw new RecursoNaoEncontradoException("Usuário não encontrado: " + matricula);
         }
-        return paraView(usuario);
+        return usuario.paraView();
     }
 
     @Override
     public List<UsuarioView> listarUsuarios() {
         List<UsuarioView> resultado = new ArrayList<>();
         for (Usuario usuario : usuarios.values()) {
-            resultado.add(paraView(usuario));
+            resultado.add(usuario.paraView());
         }
         resultado.sort((a, b) -> a.nome().compareToIgnoreCase(b.nome()));
         return resultado;
@@ -61,8 +61,4 @@ public class UsuariosEmMemoria implements UsuarioService {
         }
     }
 
-    private UsuarioView paraView(Usuario usuario) {
-        return new UsuarioView
-                (usuario.getMatricula(), usuario.getNome(), usuario.isAtivo(), usuario.getEmprestimosAtivos());
-    }
 }
