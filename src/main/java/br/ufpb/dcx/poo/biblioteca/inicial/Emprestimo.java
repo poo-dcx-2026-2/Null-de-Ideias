@@ -1,5 +1,7 @@
 package br.ufpb.dcx.poo.biblioteca.inicial;
 
+import br.ufpb.dcx.poo.biblioteca.contrato.StatusEmprestimo;
+
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.UUID;
@@ -12,6 +14,7 @@ public class Emprestimo {
     private LocalDate dataDoEmprestimo;
     private LocalDate dataPrevista;
     private LocalDate dataDaDevolucao;
+    private StatusEmprestimo status;
     int PRAZO_EM_DIAS = 14;
 
     public Emprestimo( Usuario usuario, String tombo, LocalDate dataDoEmprestimo) {
@@ -21,10 +24,19 @@ public class Emprestimo {
         this.dataDoEmprestimo = dataDoEmprestimo;
         this.dataPrevista = dataDoEmprestimo.plusDays(PRAZO_EM_DIAS);
         this.dataDaDevolucao = null;
+        this.status = StatusEmprestimo.ATIVO;
     }
 
     public boolean estaAtivo() {
         return dataDaDevolucao == null;
+    }
+
+    public StatusEmprestimo getStatus() {
+        return status;
+    }
+
+    public void setStatus(StatusEmprestimo status) {
+        this.status = status;
     }
 
     public boolean estaAtrasadoEm(LocalDate hoje) {
