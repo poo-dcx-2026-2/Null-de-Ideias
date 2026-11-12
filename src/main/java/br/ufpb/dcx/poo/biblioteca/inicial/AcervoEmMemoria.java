@@ -1,9 +1,7 @@
 package br.ufpb.dcx.poo.biblioteca.inicial;
 
 import java.text.Collator;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
+import java.util.*;
 
 import br.ufpb.dcx.poo.biblioteca.contrato.AcervoService;
 import br.ufpb.dcx.poo.biblioteca.contrato.ExemplarView;
@@ -15,7 +13,7 @@ import br.ufpb.dcx.poo.biblioteca.contrato.excecoes.RecursoNaoEncontradoExceptio
 
 public class AcervoEmMemoria implements AcervoService {
 
-    private final List<Item> itens = new ArrayList<>();
+    private final Map<String, Item> itens = new HashMap<>();
 
     @Override
     public void cadastrarItem(String codigo, String titulo, String autoria,
@@ -25,10 +23,10 @@ public class AcervoEmMemoria implements AcervoService {
         exigirTextoPreenchido(codigo, "codigo");
         exigirTextoPreenchido(titulo, "titulo");
 
-        if (localizar(codigo) != null) {
+        if (itens.containsKey(codigo)) {
             throw new RecursoDuplicadoException("Já existe item com o código " + codigo);
         }
-        itens.add(new Item(codigo, titulo, autoria, categoria, ano));
+        itens.put(codigo, new Item(codigo, titulo, autoria, categoria, ano));
     }
 
     @Override
@@ -41,7 +39,7 @@ public class AcervoEmMemoria implements AcervoService {
     @Override
     public List<ItemView> listarItens() {
         List<ItemView> resultado = new ArrayList<>();
-        for (Item item : itens) {
+        for (Item item : itens.values()) {
             resultado.add(item.paraView());
         }
         Collator collator = Collator.getInstance(new Locale("pt", "BR"));
@@ -53,7 +51,7 @@ public class AcervoEmMemoria implements AcervoService {
     public List<ItemView> buscarPorTitulo(String trecho){
         exigirTextoPreenchido(trecho, "trecho");
         List<ItemView> resultado = new ArrayList<>();
-        for (Item item : itens){
+        for (Item item : itens.values()) {
             if (item.tituloContem(trecho)) {
                 resultado.add(item.paraView());
             }
@@ -73,7 +71,7 @@ public class AcervoEmMemoria implements AcervoService {
         exigirTextoPreenchido(codigoDoItem, "codigo do item");
         exigirTextoPreenchido(tombo, "tombo");
         Item item = buscarItemOuFalhar(codigoDoItem);
-        for (Item outro : itens) {
+        for (Item outro : itens.values()) {
                 if (outro.exemplarComTombo(tombo)) {
                     throw new RecursoDuplicadoException("Já existe exemplar com o tombo " + tombo);
                 }
@@ -103,6 +101,8 @@ public class AcervoEmMemoria implements AcervoService {
                 listaDeExemplares.add(exemplarAtual.paraView());
             }
 
+            listaDeExemplares.sort(Comparator.comparing(ExemplarView::tombo));
+
             return listaDeExemplares;
         }
 
@@ -113,23 +113,13 @@ public class AcervoEmMemoria implements AcervoService {
     }
 
     private Item localizar(String codigo) {
-        for (Item item : itens) {
-            if (item.temCodigo( codigo)) {
-                return item;
-            }
-        }
-        return null;
+        return itens.get(codigo);
     }
 
     private static void exigirTextoPreenchido(String valor, String campo) {
         if (valor == null || valor.isBlank()) {
             throw new DadosInvalidosException("O campo " + campo + " é obrigatório.");
         }
-    }
-
-    /** Acesso interno usado pelos demais serviços da implementação inicial. */
-    List<Item> itens() {
-        return itens;
     }
 
 

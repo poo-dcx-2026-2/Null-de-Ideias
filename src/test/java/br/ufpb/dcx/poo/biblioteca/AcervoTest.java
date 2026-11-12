@@ -13,22 +13,13 @@ import org.junit.jupiter.api.Test;
 import br.ufpb.dcx.poo.biblioteca.contrato.Biblioteca;
 import br.ufpb.dcx.poo.biblioteca.contrato.ItemView;
 import br.ufpb.dcx.poo.biblioteca.contrato.StatusExemplar;
+import br.ufpb.dcx.poo.biblioteca.contrato.ExemplarView;
 import br.ufpb.dcx.poo.biblioteca.contrato.excecoes.BibliotecaException;
 import br.ufpb.dcx.poo.biblioteca.contrato.excecoes.DadosInvalidosException;
 import br.ufpb.dcx.poo.biblioteca.contrato.excecoes.RecursoDuplicadoException;
 import br.ufpb.dcx.poo.biblioteca.contrato.excecoes.RecursoNaoEncontradoException;
 
-/**
- * Testes públicos do acervo.
- *
- * <p>Os testes ativos passam com o código que veio no repositório. Os marcados com
- * {@code @Disabled} cobrem o que você ainda precisa implementar: remova a anotação
- * quando for implementar cada método.</p>
- *
- * <p>Estes testes são um piso, não um teto. A avaliação considera a suíte que
- * <em>você</em> escreve — cenários, casos-limite e regras de negócio que estes aqui
- * não cobrem.</p>
- */
+
 class AcervoTest {
 
     private Biblioteca biblioteca;
@@ -166,5 +157,44 @@ class AcervoTest {
         String codigoMontado = new String("L1");
 
         assertEquals("Java Efetivo", biblioteca.acervo().buscarItem(codigoMontado).titulo());
+        assertThrows(RecursoDuplicadoException.class,
+                () -> biblioteca.acervo().cadastrarItem(codigoMontado, "Outro", "X", "livro", 2020));
+    }
+
+    @Test
+    @DisplayName("listarExemplares devolve ordenado por tombo")
+    void listarExemplaresOrdenadosPorTombo() throws BibliotecaException {
+        biblioteca.acervo().cadastrarItem("L1", "Java Efetivo", "Bloch", "livro", 2019);
+        biblioteca.acervo().adicionarExemplar("L1", "T3");
+        biblioteca.acervo().adicionarExemplar("L1", "T1");
+        biblioteca.acervo().adicionarExemplar("L1", "T2");
+
+        List<String> tombos = biblioteca.acervo().listarExemplares("L1").stream()
+                .map(ExemplarView::tombo).toList();
+
+        assertEquals(List.of("T1", "T2", "T3"), tombos);
+    }
+
+    @Test
+    @DisplayName("tombo repetido recusado não deixa nada pela metade")
+    void tomboRepetidoNaoAlteraOEstado() throws BibliotecaException {
+        biblioteca.acervo().cadastrarItem("L1", "Java Efetivo", "Bloch", "livro", 2019);
+        biblioteca.acervo().adicionarExemplar("L1", "T1");
+
+        assertThrows(RecursoDuplicadoException.class,
+                () -> biblioteca.acervo().adicionarExemplar("L1", "T1"));
+        assertEquals(1, biblioteca.acervo().buscarItem("L1").totalDeExemplares());
+    }
+
+    @Test
+    void entradasNulasOuEmBrancoSaoInvalidas() throws BibliotecaException {
+        biblioteca.acervo().cadastrarItem("L1", "Java Efetivo", "Bloch", "livro", 2019);
+
+        assertThrows(DadosInvalidosException.class,
+                () -> biblioteca.acervo().cadastrarItem(null, "Título", "A", "livro", 2019));
+        assertThrows(DadosInvalidosException.class,
+                () -> biblioteca.acervo().adicionarExemplar("L1", "  "));
+        assertThrows(RecursoNaoEncontradoException.class,
+                () -> biblioteca.acervo().listarExemplares("NAO-EXISTE"));
     }
 }

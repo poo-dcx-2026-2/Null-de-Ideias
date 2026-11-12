@@ -25,6 +25,8 @@ Uma linha por uso relevante. Se não houve uso, escreva "Não houve uso de ferra
 | 05/10  | ChatGPT | Auxiliar na criação do diagrama de classes, contribuindo com sugestões sobre a organização das classes, seus atributos, métodos e relacionamentos. | modelo.puml | O diagrama foi analisado e ajustado pela equipe, que revisou a estrutura das classes, os relacionamentos e a representação dos elementos necessários ao funcionamento do sistema. |
 | 05/10  | IA do Google | Auxiliar na elaboração de soluções para os métodos da classe responsável pelo gerenciamento do acervo em memória, oferecendo sugestões de implementação e lógica de funcionamento. | AcervoEmMemoria | As soluções sugeridas foram avaliadas e adaptadas ao código existente. A equipe revisou a lógica dos métodos, verificou sua compatibilidade com a estrutura do projeto e realizou os ajustes necessários para atender aos requisitos da aplicação. |
 | 30/10 | Claude | Auxiliar na elaboração e organização do README do projeto, contribuindo com a estruturação das informações, descrição das funcionalidades implementadas, justificativa das estruturas de dados utilizadas, documentação do defeito identificado e apresentação das regras autorais do sistema. | README.md | O conteúdo sugerido foi analisado e adaptado pela equipe, que revisou as informações técnicas, conferiu as descrições das classes e métodos, ajustou as justificativas das coleções utilizadas e organizou a documentação de acordo com o desenvolvimento real do projeto. |
+|12/11|Claude|Auxiliar na atualização do diagrama de classes, oferecendo sugestões para adequar o modelo à evolução do projeto, além de contribuir com ideias para a criação de novos testes, visando ampliar a verificação do funcionamento do sistema.|modelo.puml e testes do projeto|As sugestões foram analisadas e adaptadas pela equipe, que revisou o diagrama de classes conforme as alterações realizadas no código e avaliou as ideias de novos testes, selecionando e implementando aqueles considerados adequados aos requisitos do sistema.|
+
 ## Compromisso
 
 Ao entregar, a equipe declara que:
@@ -37,8 +39,8 @@ Ao entregar, a equipe declara que:
 
 Assinaturas (nome e data):
 
-Andrêciele Ferreira da Cruz 30/10
+Andrêciele Ferreira da Cruz 12/11
 
-Ellen Cristine Da Silva 30/10
+Ellen Cristine Da Silva 12/11
 
-Mylena Paulino De Lima 30/10
+Mylena Paulino De Lima 12/11
