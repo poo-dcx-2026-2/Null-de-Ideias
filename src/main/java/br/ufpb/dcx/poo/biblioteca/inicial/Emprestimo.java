@@ -1,5 +1,7 @@
 package br.ufpb.dcx.poo.biblioteca.inicial;
 
+import br.ufpb.dcx.poo.biblioteca.contrato.EmprestimoService;
+import br.ufpb.dcx.poo.biblioteca.contrato.EmprestimoView;
 import br.ufpb.dcx.poo.biblioteca.contrato.StatusEmprestimo;
 
 import java.time.LocalDate;
@@ -15,16 +17,20 @@ public class Emprestimo {
     private LocalDate dataPrevista;
     private LocalDate dataDaDevolucao;
     private StatusEmprestimo status;
-    int PRAZO_EM_DIAS = 14;
 
-    public Emprestimo( Usuario usuario, String tombo, LocalDate dataDoEmprestimo) {
+
+    Emprestimo( Usuario usuario, String tombo, LocalDate dataDoEmprestimo) {
         this.id = UUID.randomUUID().toString();
         this.usuario = usuario;
         this.tombo = tombo;
         this.dataDoEmprestimo = dataDoEmprestimo;
-        this.dataPrevista = dataDoEmprestimo.plusDays(PRAZO_EM_DIAS);
+        this.dataPrevista = dataDoEmprestimo.plusDays(EmprestimoService.PRAZO_EM_DIAS);
         this.dataDaDevolucao = null;
         this.status = StatusEmprestimo.ATIVO;
+    }
+    public void registrarDevolucao(LocalDate data){
+        this.dataDaDevolucao = data;
+        this.status = StatusEmprestimo.DEVOLVIDO;
     }
 
     public boolean estaAtivo() {
@@ -90,4 +96,6 @@ public class Emprestimo {
     public String getId() {
         return id;
     }
+
+    public EmprestimoView paraView() { return new EmprestimoView(id, tombo, usuario.getMatricula(), dataDoEmprestimo, dataPrevista, dataDaDevolucao, status);}
 }

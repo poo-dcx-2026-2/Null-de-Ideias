@@ -1,4 +1,5 @@
 package br.ufpb.dcx.poo.biblioteca.inicial;
+import br.ufpb.dcx.poo.biblioteca.contrato.EmprestimoService;
 import br.ufpb.dcx.poo.biblioteca.contrato.excecoes.LimiteDeEmprestimosExcedidoException;
 import br.ufpb.dcx.poo.biblioteca.contrato.excecoes.OperacaoNaoPermitidaException;
 import br.ufpb.dcx.poo.biblioteca.contrato.excecoes.UsuarioInativoException;
@@ -12,7 +13,7 @@ public class Usuario {
     private String nome;
     private boolean ativo;
     private List<Emprestimo> emprestimos = new ArrayList<>();
-    int LIMITE_DE_EMPRESTIMOS = 3;
+
 
 
     public Usuario(String matricula, String nome) {
@@ -33,7 +34,7 @@ public class Usuario {
     }
 
     public Emprestimo emprestar(String tombo, LocalDate data) throws UsuarioInativoException, LimiteDeEmprestimosExcedidoException {
-        if (emprestimosAtivos() >= LIMITE_DE_EMPRESTIMOS) {
+        if (emprestimosAtivos() >= EmprestimoService.LIMITE_DE_EMPRESTIMOS) {
             throw new LimiteDeEmprestimosExcedidoException("Limite de empréstimos Excedido!");
         }
         if (!isAtivo()){
@@ -44,28 +45,24 @@ public class Usuario {
         return emprestimo;
     }
 
-    public void devolver(String tombo,LocalDate data) throws UsuarioInativoException , OperacaoNaoPermitidaException{
-        Emprestimo emprestimo = new Emprestimo(this,tombo,data);
-        if (!isAtivo()){
-            throw new UsuarioInativoException("Usuario inativo não poder realizar devolução!");
+
+    public void devolver(String tombo, LocalDate data) throws UsuarioInativoException, OperacaoNaoPermitidaException {
+        if (!isAtivo()) {
+            throw new UsuarioInativoException("Usuário inativo não pode realizar devolução!");
         }
-        if (emprestimosAtivos()<0){
-            throw new OperacaoNaoPermitidaException("O usuário não possui nenhum empréstimo ativo!");
+        for (Emprestimo emprestimo : emprestimos) {
+            if (emprestimo.estaAtivo() && emprestimo.getTombo().equals(tombo)) {
+                emprestimo.registrarDevolucao(data);
+                return;
+            }
         }
-        if(!emprestimos.contains(emprestimo)){
-            throw new OperacaoNaoPermitidaException("Este empréstimo não pertence a este usuário!");
-        }
-        emprestimos.remove(emprestimo);
+        throw new OperacaoNaoPermitidaException("Nenhum empréstimo ativo encontrado para este tombo!");
     }
 
 
 
     public List<Emprestimo> getEmprestimos() {
         return emprestimos;
-    }
-
-    public void setEmprestimos(List<Emprestimo> emprestimos) {
-        this.emprestimos = emprestimos;
     }
 
     public String getMatricula() {
@@ -92,5 +89,6 @@ public class Usuario {
     public UsuarioView paraView() {
         return new UsuarioView(matricula, nome, ativo, emprestimosAtivos());
     }
+
 
 }
