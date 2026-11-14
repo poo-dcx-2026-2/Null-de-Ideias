@@ -47,18 +47,32 @@ public class UsuariosEmMemoria implements UsuarioService {
     @Override
     public void desativarUsuario(String matricula)
             throws RecursoNaoEncontradoException, OperacaoNaoPermitidaException {
-        throw new UnsupportedOperationException("Entrega 2: implementar desativarUsuario");
+        Usuario usuario = buscarUsuarioOuFalhar(matricula);
+        if (usuario.temEmprestimosAtivos()) {
+            throw new OperacaoNaoPermitidaException(
+                    "Usuário " + matricula + " possui empréstimos ativos e não pode ser desativado.");
+        }
+        usuario.desativar();
     }
 
     @Override
     public void reativarUsuario(String matricula) throws RecursoNaoEncontradoException {
-        throw new UnsupportedOperationException("Entrega 2: implementar reativarUsuario");
+        buscarUsuarioOuFalhar(matricula).reativar();
     }
 
     private static void exigirTextoPreenchido(String valor, String campo) {
         if (valor == null || valor.isBlank()) {
             throw new DadosInvalidosException("O campo " + campo + " é obrigatório.");
         }
+    }
+
+    private Usuario buscarUsuarioOuFalhar(String matricula) throws RecursoNaoEncontradoException {
+        exigirTextoPreenchido(matricula, "matricula");
+        Usuario usuario = usuarios.get(matricula);
+        if (usuario == null) {
+            throw new RecursoNaoEncontradoException("Usuário não encontrado: " + matricula);
+        }
+        return usuario;
     }
 
 }

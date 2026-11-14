@@ -4,16 +4,15 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import br.ufpb.dcx.poo.biblioteca.contrato.excecoes.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import br.ufpb.dcx.poo.biblioteca.contrato.Biblioteca;
 import br.ufpb.dcx.poo.biblioteca.contrato.UsuarioView;
-import br.ufpb.dcx.poo.biblioteca.contrato.excecoes.BibliotecaException;
-import br.ufpb.dcx.poo.biblioteca.contrato.excecoes.DadosInvalidosException;
-import br.ufpb.dcx.poo.biblioteca.contrato.excecoes.RecursoDuplicadoException;
-import br.ufpb.dcx.poo.biblioteca.contrato.excecoes.RecursoNaoEncontradoException;
+
+import java.time.LocalDate;
 
 /** Testes públicos dos usuários. */
 class UsuarioTest {
@@ -69,5 +68,17 @@ class UsuarioTest {
 
         assertEquals("Ana", biblioteca.usuarios().listarUsuarios().get(0).nome());
         assertEquals("Carlos", biblioteca.usuarios().listarUsuarios().get(2).nome());
+    }
+
+    @Test
+    @DisplayName("não é possível desativar usuário com empréstimo ativo")
+    void desativarComEmprestimoAtivo() throws BibliotecaException {
+        biblioteca.usuarios().cadastrarUsuario("1", "Ana");
+        biblioteca.acervo().cadastrarItem("F1", "Filme", "Diretor", "Drama", 2020);
+        biblioteca.acervo().adicionarExemplar("F1", "T1");
+        biblioteca.emprestimos().emprestar("T1", "1", LocalDate.of(2026, 11, 14));
+
+        assertThrows(OperacaoNaoPermitidaException.class,
+                () -> biblioteca.usuarios().desativarUsuario("1"));
     }
 }

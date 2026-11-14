@@ -31,23 +31,28 @@ public class Usuario {
         return ativo;
     }
 
-    public void setAtivo(boolean ativo) {
-        this.ativo = ativo;
+    public void desativar() {
+        this.ativo = false;
+    }
+
+    public void reativar() {
+        this.ativo = true;
+    }
+
+    public boolean temEmprestimosAtivos() {
+        return emprestimosAtivos > 0;
     }
 
     public int getEmprestimosAtivos() {
         return emprestimosAtivos;
     }
 
-    public void setEmprestimosAtivos(int emprestimosAtivos) {
-        this.emprestimosAtivos = emprestimosAtivos;
-    }
-
     public void incrementEmprestimosAtivos() {
         emprestimosAtivos++;
     }
+
     public void decrementEmprestimosAtivos() {
-        if  (emprestimosAtivos > 0) {
+        if (emprestimosAtivos > 0) {
             emprestimosAtivos--;
         }
     }
