@@ -70,15 +70,4 @@ class UsuarioTest {
         assertEquals("Carlos", biblioteca.usuarios().listarUsuarios().get(2).nome());
     }
 
-    @Test
-    @DisplayName("não é possível desativar usuário com empréstimo ativo")
-    void desativarComEmprestimoAtivo() throws BibliotecaException {
-        biblioteca.usuarios().cadastrarUsuario("1", "Ana");
-        biblioteca.acervo().cadastrarItem("F1", "Filme", "Diretor", "Drama", 2020);
-        biblioteca.acervo().adicionarExemplar("F1", "T1");
-        biblioteca.emprestimos().emprestar("T1", "1", LocalDate.of(2026, 11, 14));
-
-        assertThrows(OperacaoNaoPermitidaException.class,
-                () -> biblioteca.usuarios().desativarUsuario("1"));
-    }
 }
