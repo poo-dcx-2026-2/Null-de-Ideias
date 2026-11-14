@@ -61,15 +61,15 @@ dados/                ← arquivos de exemplo
 
 ## Decisões de modelagem e justificativa das coleções
 
-A identidade de um usuário é definida na construção e não muda depois: em Usuario, a matrícula fica em um campo final, sem setter. O nome pode mudar (para permitir nome social), e o estado de ativo e a contagem de empréstimos só mudam por métodos próprios (setAtivo, incrementarEmprestimosAtivos, decrementarEmprestimosAtivos).
+A identidade de cada entidade é definida na construção e não muda depois: `Item.codigo`, `Exemplar.tombo` e `Usuario.matricula` são campos `final`, sem setter. Assim, uma chave que já está guardada em um `Map` não pode ser trocada por fora. O nome do usuário pode mudar (para permitir nome social), e o estado de ativo e a contagem de empréstimos só mudam por métodos próprios (`setAtivo`, `incrementEmprestimosAtivos`, `decrementEmprestimosAtivos`).
 
-| Estrutura              | Onde | Uso|	Justificativa |
-|------------------------|---|---|---|
-| `List<Item>`           |	AcervoEmMemoria|	Itens do acervo|	Mantém a ordem de cadastro e é a estrutura mais simples para um acervo em memória de poucos itens. A busca por código (localizar) percorre a lista, o que é aceitável nesse volume. Com um acervo grande, um Map pelo código seria mais eficiente.|
-| `List<Exemplar>`       |	Item	|Exemplares que pertencem a um item	|Representa a composição item–exemplar: o exemplar só existe ligado a um item, e a ordem de cadastro é preservada.
-| `Map<String, Usuario>` |	UsuariosEmMemoria|	Usuários indexados pela matrícula|	Buscar por matrícula e checar matrícula repetida são operações diretas, sem varrer a coleção. Elimina as duas listas paralelas que existiam (matrículas e nomes) e mantém matrícula e nome no mesmo objeto.|
+| Estrutura | Onde | Uso | Justificativa |
+|---|---|---|---|
+| `Map<String, Item>` (`LinkedHashMap`) | `AcervoEmMemoria` | Itens do acervo, com o código como chave | `buscarItem` e a checagem de código repetido precisam achar o item pelo código sem percorrer a lista inteira. O `LinkedHashMap` mantém a ordem de cadastro; a ordenação por título é feita em `listarItens`. |
+| `List<Exemplar>` | `Item` | Exemplares que pertencem a um item | Representa a composição item–exemplar: o exemplar só existe ligado a um item, e a ordem de cadastro é preservada. A ordenação por tombo é feita em `listarExemplares`. |
+| `Map<String, Usuario>` (`LinkedHashMap`) | `UsuariosEmMemoria` | Usuários, com a matrícula como chave | Buscar por matrícula e checar matrícula repetida são operações diretas. Elimina as duas listas paralelas que existiam (matrículas e nomes) e mantém matrícula e nome no mesmo objeto. |
 
-As consultas devolvem ItemView, ExemplarView e UsuarioView (tipos do contrato), e não as entidades internas. Assim o estado do domínio não vaza para quem chama os serviços.
+Nenhuma coleção interna é devolvida a quem chama. `Item.getExemplares()` devolve uma cópia imutável (`List.copyOf`), e as consultas dos serviços devolvem `ItemView`, `ExemplarView` e `UsuarioView` (tipos do contrato), e não as entidades. Assim, o estado do domínio não vaza e só muda pelas operações que aplicam as regras.
 
 ---
 
@@ -83,7 +83,7 @@ As consultas devolvem ItemView, ExemplarView e UsuarioView (tipos do contrato), 
 
 **Correção:** commit `94613dc` (05/10/2026, Andrêciele), que trocou `==` por `.equals(...)`.
 
-**Teste de regressão:** `buscarItemComCodigoMontadoEmTempoDeExecucao`, em `AcervoTest`, adicionado depois da correção. Commit: `7e92820` (30/10/2026, Mylena).
+**Teste de regressão:** `buscarItemComCodigoMontadoEmTempoDeExecucao`, em `AcervoTest`, adicionado depois da correção (commit `7e92820`, 30/10/2026, Mylena) e ampliado para também verificar que um segundo cadastro com o mesmo código lança `RecursoDuplicadoException`.
 
 --- 
 
