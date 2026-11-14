@@ -40,4 +40,11 @@ public class Exemplar {
     public ExemplarView paraView() {
         return new ExemplarView(tombo, item.getCodigo(), status);
     }
+
+    public boolean podeSerEmprestadoA(Usuario usuario) {
+        return this.status == StatusExemplar.DISPONIVEL;
+    }
+    public void marcarComoEmprestado() {
+        this.status = StatusExemplar.EMPRESTADO;
+    }
 }
