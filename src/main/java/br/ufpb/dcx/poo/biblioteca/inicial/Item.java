@@ -61,12 +61,12 @@ public class Item {
         exemplares.put(exemplar.getTombo(), exemplar);
     }
 
-    public Exemplar buscarExemplar(String tombo) {
-        return exemplares.get(tombo);
+    public boolean exemplarComTombo(String tombo) {
+        return exemplares.containsKey(tombo);
     }
 
-    public boolean temCodigo(String codigo) {
-        return this.codigo.equals(codigo);
+    public Exemplar buscarExemplar(String tombo) {
+        return exemplares.get(tombo);
     }
 
     public boolean tituloContem(String trecho) {

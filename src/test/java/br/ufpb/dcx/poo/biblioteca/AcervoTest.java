@@ -197,4 +197,49 @@ class AcervoTest {
         assertThrows(RecursoNaoEncontradoException.class,
                 () -> biblioteca.acervo().listarExemplares("NAO-EXISTE"));
     }
+
+    @Test
+    @DisplayName("buscarPorCategoria ignora maiúsculas e ordena por título")
+    void categoriaIgnoraMaiusculasEOrdenaPorTitulo() throws BibliotecaException {
+        biblioteca.acervo().cadastrarItem("L1", "Refatoração", "Fowler", "livro", 2004);
+        biblioteca.acervo().cadastrarItem("J1", "Carcassonne", "Wrede", "jogo", 2000);
+        biblioteca.acervo().cadastrarItem("L2", "Código limpo", "Martin", "Livro", 2009);
+
+        List<ItemView> livros = biblioteca.acervo().buscarPorCategoria("LIVRO");
+
+        assertEquals(2, livros.size());
+        assertEquals("Código limpo", livros.get(0).titulo());
+        assertEquals("Refatoração", livros.get(1).titulo());
+    }
+
+    @Test
+    @DisplayName("categoria sem itens devolve lista vazia; categoria em branco é inválida")
+    void categoriaSemResultadoEEmBranco() {
+        assertEquals(List.of(), biblioteca.acervo().buscarPorCategoria("jogo"));
+        assertThrows(DadosInvalidosException.class,
+                () -> biblioteca.acervo().buscarPorCategoria("  "));
+    }
+
+    @Test
+    @DisplayName("baixar um exemplar o torna INDISPONIVEL e tira dos disponíveis")
+    void baixarExemplar() throws BibliotecaException {
+        biblioteca.acervo().cadastrarItem("L1", "Java Efetivo", "Bloch", "livro", 2019);
+        biblioteca.acervo().adicionarExemplar("L1", "T1");
+        biblioteca.acervo().adicionarExemplar("L1", "T2");
+
+        biblioteca.acervo().baixarExemplar("T1");
+
+        ItemView item = biblioteca.acervo().buscarItem("L1");
+        assertEquals(2, item.totalDeExemplares());
+        assertEquals(1, item.exemplaresDisponiveis());
+        assertEquals(StatusExemplar.INDISPONIVEL,
+                biblioteca.acervo().listarExemplares("L1").get(0).status());
+    }
+
+    @Test
+    @DisplayName("baixar tombo inexistente lança RecursoNaoEncontradoException")
+    void baixarTomboInexistente() {
+        assertThrows(RecursoNaoEncontradoException.class,
+                () -> biblioteca.acervo().baixarExemplar("NAO-EXISTE"));
+    }
 }
