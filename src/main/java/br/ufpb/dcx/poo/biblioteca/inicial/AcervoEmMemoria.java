@@ -62,7 +62,20 @@ public class AcervoEmMemoria implements AcervoService {
 
     @Override
     public List<ItemView> buscarPorCategoria(String categoria) {
-        throw new UnsupportedOperationException("Entrega 2: implementar buscarPorCategoria");
+        exigirTextoPreenchido(categoria, "categoria");
+        List<ItemView> resultado = new ArrayList<>();
+        for (Item item : itens.values()) {
+            if (item.temCategoria(categoria)) {
+                resultado.add(item.paraView());
+            }
+        }
+        ordenarPorTitulo(resultado);
+        return resultado;
+    }
+
+    private static void ordenarPorTitulo(List<ItemView> visoes) {
+        Collator collator = Collator.getInstance(new Locale("pt", "BR"));
+        visoes.sort((a, b) -> collator.compare(a.titulo(), b.titulo()));
     }
 
     @Override
