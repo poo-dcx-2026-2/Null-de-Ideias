@@ -62,7 +62,15 @@ public class AcervoEmMemoria implements AcervoService {
 
     @Override
     public List<ItemView> buscarPorCategoria(String categoria) {
-        throw new UnsupportedOperationException("Entrega 2: implementar buscarPorCategoria");
+        exigirTextoPreenchido(categoria,"categoria");
+        List<ItemView> resultado = new ArrayList<>();
+        for ( Item item : itens.values()){
+            if (item.getCategoria().equalsIgnoreCase(categoria)){
+                resultado.add(item.paraView());
+            }
+        }
+        resultado.sort((a,b) -> a.titulo().compareToIgnoreCase(b.titulo()));
+        return resultado;
     }
 
     @Override
