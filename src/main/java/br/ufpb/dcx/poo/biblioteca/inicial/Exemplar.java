@@ -2,6 +2,7 @@ package br.ufpb.dcx.poo.biblioteca.inicial;
 
 import br.ufpb.dcx.poo.biblioteca.contrato.ExemplarView;
 import br.ufpb.dcx.poo.biblioteca.contrato.StatusExemplar;
+import br.ufpb.dcx.poo.biblioteca.contrato.excecoes.OperacaoNaoPermitidaException;
 
 /**
  * A cópia física de um item. O que se empresta é o exemplar, não o item.
@@ -39,5 +40,13 @@ public class Exemplar {
 
     public ExemplarView paraView() {
         return new ExemplarView(tombo, item.getCodigo(), status);
+    }
+
+    public void baixar() throws OperacaoNaoPermitidaException {
+        if (status == StatusExemplar.EMPRESTADO) {
+            throw new OperacaoNaoPermitidaException(
+                    "Exemplar emprestado não pode ser baixado: " + tombo);
+        }
+        status = StatusExemplar.INDISPONIVEL;
     }
 }
