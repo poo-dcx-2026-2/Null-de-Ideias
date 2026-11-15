@@ -1,12 +1,17 @@
 package br.ufpb.dcx.poo.biblioteca.inicial;
-import br.ufpb.dcx.poo.biblioteca.contrato.EmprestimoService;
-import br.ufpb.dcx.poo.biblioteca.contrato.ReservaView;
-import br.ufpb.dcx.poo.biblioteca.contrato.excecoes.*;
-import br.ufpb.dcx.poo.biblioteca.contrato.UsuarioView;
+
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+
+import br.ufpb.dcx.poo.biblioteca.contrato.EmprestimoService;
+import br.ufpb.dcx.poo.biblioteca.contrato.ReservaView;
+import br.ufpb.dcx.poo.biblioteca.contrato.UsuarioView;
+import br.ufpb.dcx.poo.biblioteca.contrato.excecoes.ExemplarIndisponivelException;
+import br.ufpb.dcx.poo.biblioteca.contrato.excecoes.LimiteDeEmprestimosExcedidoException;
+import br.ufpb.dcx.poo.biblioteca.contrato.excecoes.RecursoNaoEncontradoException;
+import br.ufpb.dcx.poo.biblioteca.contrato.excecoes.UsuarioInativoException;
 
 public class Usuario {
 
@@ -92,6 +97,16 @@ public class Usuario {
             }
         }
         throw new RecursoNaoEncontradoException("Empréstimo ativo não encontrado para o tombo: " + tombo);
+    }
+
+    /** Usado pelo serviço para achar quem está com o exemplar. */
+    boolean temEmprestimoAtivoDe(String tombo) {
+        for (Emprestimo emprestimo : emprestimos) {
+            if (emprestimo.estaAtivo() && emprestimo.getExemplar().temTombo(tombo)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private final List<Reserva> reservas = new ArrayList<>();

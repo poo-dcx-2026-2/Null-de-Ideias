@@ -1,8 +1,8 @@
 package br.ufpb.dcx.poo.biblioteca.inicial;
 
-import br.ufpb.dcx.poo.biblioteca.contrato.ReservaView;
-
 import java.time.LocalDate;
+
+import br.ufpb.dcx.poo.biblioteca.contrato.ReservaView;
 
 public class Reserva {
     private String id;
@@ -12,7 +12,7 @@ public class Reserva {
     private LocalDate dataDeReserva;
     private int posicaoNaFila;
 
-     Reserva(String id, String codigoDoItem, String matricula, String nome, LocalDate dataDeReserva, int posicaoNaFila) {
+    Reserva(String id, String codigoDoItem, String matricula, String nome, LocalDate dataDeReserva, int posicaoNaFila) {
         this.id = id;
         this.codigoDoItem = codigoDoItem;
         this.matricula = matricula;

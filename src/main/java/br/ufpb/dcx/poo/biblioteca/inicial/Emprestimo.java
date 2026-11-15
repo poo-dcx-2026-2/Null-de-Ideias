@@ -1,14 +1,12 @@
 package br.ufpb.dcx.poo.biblioteca.inicial;
 
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
+
 import br.ufpb.dcx.poo.biblioteca.contrato.EmprestimoService;
 import br.ufpb.dcx.poo.biblioteca.contrato.EmprestimoView;
 import br.ufpb.dcx.poo.biblioteca.contrato.StatusEmprestimo;
 import br.ufpb.dcx.poo.biblioteca.contrato.excecoes.DadosInvalidosException;
-
-import java.time.LocalDate;
-import java.time.temporal.ChronoUnit;
-import java.util.UUID;
-
 
 public class Emprestimo {
 
@@ -19,7 +17,6 @@ public class Emprestimo {
     private final LocalDate dataPrevista;
     private LocalDate dataDaDevolucao;
 
-
     Emprestimo(String id, Usuario usuario, Exemplar exemplar, LocalDate dataDoEmprestimo) {
         this.id = id;
         this.usuario = usuario;
@@ -28,29 +25,17 @@ public class Emprestimo {
         this.dataPrevista = dataDoEmprestimo.plusDays(EmprestimoService.PRAZO_EM_DIAS);
     }
 
-    public String getId() {
-        return id;
-    }
+    public String getId() { return id; }
 
-    public Usuario getUsuario() {
-        return usuario;
-    }
+    public Usuario getUsuario() { return usuario; }
 
-    public Exemplar getExemplar() {
-        return exemplar;
-    }
+    public Exemplar getExemplar() { return exemplar; }
 
-    public LocalDate getDataDoEmprestimo() {
-        return dataDoEmprestimo;
-    }
+    public LocalDate getDataDoEmprestimo() { return dataDoEmprestimo; }
 
-    public LocalDate getDataPrevista() {
-        return dataPrevista;
-    }
+    public LocalDate getDataPrevista() { return dataPrevista; }
 
-    public LocalDate getDataDaDevolucao() {
-        return dataDaDevolucao;
-    }
+    public LocalDate getDataDaDevolucao() { return dataDaDevolucao; }
 
     public boolean estaAtivo() {
         return dataDaDevolucao == null;
@@ -71,7 +56,6 @@ public class Emprestimo {
         this.dataDaDevolucao = data;
     }
 
-
     public EmprestimoView paraView(LocalDate hoje) {
         StatusEmprestimo status;
         if (!estaAtivo()) {
@@ -84,6 +68,4 @@ public class Emprestimo {
         return new EmprestimoView(id, exemplar.getTombo(), usuario.getMatricula(),
                 dataDoEmprestimo, dataPrevista, dataDaDevolucao, status);
     }
-
-
 }

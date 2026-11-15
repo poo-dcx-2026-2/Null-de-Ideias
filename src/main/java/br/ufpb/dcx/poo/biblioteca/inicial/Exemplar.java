@@ -2,12 +2,8 @@ package br.ufpb.dcx.poo.biblioteca.inicial;
 
 import br.ufpb.dcx.poo.biblioteca.contrato.ExemplarView;
 import br.ufpb.dcx.poo.biblioteca.contrato.StatusExemplar;
+import br.ufpb.dcx.poo.biblioteca.contrato.excecoes.OperacaoNaoPermitidaException;
 
-/**
- * A cópia física de um item. O que se empresta é o exemplar, não o item.
- *
- * <p>Ponto de partida, como {@link Item}.</p>
- */
 public class Exemplar {
 
     private String tombo;
@@ -41,14 +37,35 @@ public class Exemplar {
         return new ExemplarView(tombo, item.getCodigo(), status);
     }
 
+    /** Disponível: qualquer usuário. Reservado: só o primeiro da fila do item. */
     public boolean podeSerEmprestadoA(Usuario usuario) {
-        return this.status == StatusExemplar.DISPONIVEL;
+        if (this.status == StatusExemplar.DISPONIVEL) {
+            return true;
+        }
+        if (this.status == StatusExemplar.RESERVADO) {
+            Reserva primeira = item.proximaDaFila();
+            return primeira != null && primeira.pertenceAoUsuario(usuario.getMatricula());
+        }
+        return false;
     }
+
     public void marcarComoEmprestado() {
         this.status = StatusExemplar.EMPRESTADO;
     }
 
     public void marcarComoDisponivel() {
         this.status = StatusExemplar.DISPONIVEL;
+    }
+
+    public void marcarComoReservado() {
+        this.status = StatusExemplar.RESERVADO;
+    }
+
+    public void baixar() throws OperacaoNaoPermitidaException {
+        if (status == StatusExemplar.EMPRESTADO) {
+            throw new OperacaoNaoPermitidaException(
+                    "Exemplar emprestado não pode ser baixado: " + tombo);
+        }
+        status = StatusExemplar.INDISPONIVEL;
     }
 }
