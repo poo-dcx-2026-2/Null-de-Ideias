@@ -10,17 +10,11 @@ import br.ufpb.dcx.poo.biblioteca.persistencia.LinhaDeItem;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Reúne os quatro serviços em um único ponto de acesso.
- *
- * <p>Guarde esta classe na memória: na Aula 13 você vai descobrir que ela tem nome
- * e que a decisão de existir ou não tem consequências.</p>
- */
 public class BibliotecaInicial implements Biblioteca {
 
     private AcervoEmMemoria acervo = new AcervoEmMemoria();
     private final UsuariosEmMemoria usuarios = new UsuariosEmMemoria();
-    private final EmprestimosNaoImplementados emprestimos = new EmprestimosNaoImplementados();
+    private final EmprestimosEmMemoria emprestimos = new EmprestimosEmMemoria(() -> acervo, usuarios);
     private final RelatoriosNaoImplementados relatorios = new RelatoriosNaoImplementados();
 
     @Override
