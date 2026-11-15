@@ -1,8 +1,14 @@
 package br.ufpb.dcx.poo.biblioteca.inicial;
 
 import br.ufpb.dcx.poo.biblioteca.contrato.ItemView;
+import br.ufpb.dcx.poo.biblioteca.contrato.ReservaView;
+import br.ufpb.dcx.poo.biblioteca.contrato.excecoes.DadosInvalidosException;
+import br.ufpb.dcx.poo.biblioteca.contrato.excecoes.RecursoNaoEncontradoException;
+import br.ufpb.dcx.poo.biblioteca.contrato.excecoes.UsuarioInativoException;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -82,5 +88,57 @@ public class Item {
 
     public ItemView paraView() {
         return new ItemView(codigo, titulo, autoria, categoria, ano, exemplares(), exemplaresDisponiveis());
+    }
+
+    private final List<Reserva> reservas = new ArrayList<>();
+
+
+    public List<Reserva> getReservas() {
+        return Collections.unmodifiableList(reservas);
+    }
+
+    public int tamanhoDaFila() {
+        return reservas.size();
+    }
+
+    public List<ReservaView> listarReservas() {
+        List<ReservaView> resultado = new ArrayList<>();
+        for (Reserva reserva : reservas) {
+            resultado.add(reserva.paraView());
+        }
+        return resultado;
+    }
+
+    public Reserva proximaDaFila() {
+        return reservas.isEmpty() ? null : reservas.get(0);
+    }
+
+    public void cancelarReserva(Usuario usuario) throws RecursoNaoEncontradoException {
+        for (Reserva reserva : reservas) {
+            if (reserva.pertenceAoUsuario(usuario.getMatricula())) {
+                reservas.remove(reserva);
+                usuario.removerReserva(reserva);
+                reordenarFila();
+                return;
+            }
+        }
+        throw new RecursoNaoEncontradoException(
+                "Reserva não encontrada para o usuário " + usuario.getMatricula()
+                        + " no item " + codigo);
+    }
+
+    public Reserva removerPrimeiraDaFila() {
+        if (reservas.isEmpty()) {
+            return null;
+        }
+        Reserva primeira = reservas.remove(0);
+        reordenarFila();
+        return primeira;
+    }
+
+    private void reordenarFila() {
+        for (int i = 0; i < reservas.size(); i++) {
+            reservas.get(i).atualizarPosicao(i + 1);
+        }
     }
 }

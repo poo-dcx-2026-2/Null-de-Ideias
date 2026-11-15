@@ -1,12 +1,11 @@
 package br.ufpb.dcx.poo.biblioteca.inicial;
 import br.ufpb.dcx.poo.biblioteca.contrato.EmprestimoService;
-import br.ufpb.dcx.poo.biblioteca.contrato.excecoes.ExemplarIndisponivelException;
-import br.ufpb.dcx.poo.biblioteca.contrato.excecoes.LimiteDeEmprestimosExcedidoException;
-import br.ufpb.dcx.poo.biblioteca.contrato.excecoes.OperacaoNaoPermitidaException;
-import br.ufpb.dcx.poo.biblioteca.contrato.excecoes.UsuarioInativoException;
+import br.ufpb.dcx.poo.biblioteca.contrato.ReservaView;
+import br.ufpb.dcx.poo.biblioteca.contrato.excecoes.*;
 import br.ufpb.dcx.poo.biblioteca.contrato.UsuarioView;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class Usuario {
@@ -84,4 +83,45 @@ public class Usuario {
         return new UsuarioView(matricula, nome, ativo, emprestimosAtivos());
     }
 
+    public void devolver(String tombo, LocalDate data) throws RecursoNaoEncontradoException {
+        for (Emprestimo emprestimo : emprestimos) {
+            if (emprestimo.estaAtivo() && emprestimo.getExemplar().temTombo(tombo)) {
+                emprestimo.registrarDevolucao(data);
+                emprestimo.getExemplar().marcarComoDisponivel();
+                return;
+            }
+        }
+        throw new RecursoNaoEncontradoException("Empréstimo ativo não encontrado para o tombo: " + tombo);
+    }
+
+    private final List<Reserva> reservas = new ArrayList<>();
+
+    public List<Reserva> getReservas() {
+        return Collections.unmodifiableList(reservas);
+    }
+
+    void adicionarReserva(Reserva reserva) {
+        reservas.add(reserva);
+    }
+
+    void removerReserva(Reserva reserva) {
+        reservas.remove(reserva);
+    }
+
+    public boolean temReservaPara(String codigoDoItem) {
+        for (Reserva reserva : reservas) {
+            if (reserva.getCodigoDoItem().equals(codigoDoItem)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public List<ReservaView> listarReservas() {
+        List<ReservaView> resultado = new ArrayList<>();
+        for (Reserva reserva : reservas) {
+            resultado.add(reserva.paraView());
+        }
+        return resultado;
+    }
 }

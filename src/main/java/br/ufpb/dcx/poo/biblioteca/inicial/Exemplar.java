@@ -47,4 +47,8 @@ public class Exemplar {
     public void marcarComoEmprestado() {
         this.status = StatusExemplar.EMPRESTADO;
     }
+
+    public void marcarComoDisponivel() {
+        this.status = StatusExemplar.DISPONIVEL;
+    }
 }

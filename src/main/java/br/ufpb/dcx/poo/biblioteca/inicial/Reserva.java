@@ -25,50 +25,33 @@ public class Reserva {
         return id;
     }
 
-    public void setId(String id) {
-        this.id = id;
-    }
-
     public String getCodigoDoItem() {
         return codigoDoItem;
-    }
-
-    public void setCodigoDoItem(String codigoDoItem) {
-        this.codigoDoItem = codigoDoItem;
     }
 
     public String getMatricula() {
         return matricula;
     }
 
-    public void setMatricula(String matricula) {
-        this.matricula = matricula;
-    }
-
     public String getNome() {
         return nome;
-    }
-
-    public void setNome(String nome) {
-        this.nome = nome;
     }
 
     public LocalDate getDataDeReserva() {
         return dataDeReserva;
     }
 
-    public void setDataDeReserva(LocalDate dataDeReserva) {
-        this.dataDeReserva = dataDeReserva;
-    }
-
     public int getPosicaoNaFila() {
         return posicaoNaFila;
     }
 
-    public void setPosicaoNaFila(int posicaoNaFila) {
-        this.posicaoNaFila = posicaoNaFila;
+    public boolean pertenceAoUsuario(String matricula) {
+        return this.matricula.equals(matricula);
     }
 
+    void atualizarPosicao(int novaPosicao) {
+        this.posicaoNaFila = novaPosicao;
+    }
     public ReservaView paraView() {
         return new ReservaView(id, codigoDoItem, matricula, dataDeReserva, posicaoNaFila);
     }
