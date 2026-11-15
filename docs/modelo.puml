@@ -23,7 +23,7 @@ enum StatusExemplar {
 ' =========================================================
 
 class Item {
-    - codigo : String
+    - codigo : String {readOnly}
     - titulo : String
     - autoria : String
     - categoria : String
@@ -33,7 +33,6 @@ class Item {
     + Item(codigo : String, titulo : String, autoria : String, categoria : String, ano : int)
 
     + getCodigo() : String
-    + setCodigo(codigo : String) : void
 
     + getTitulo() : String
     + setTitulo(titulo : String) : void
@@ -48,24 +47,44 @@ class Item {
     + setAno(ano : int) : void
 
     + getExemplares() : List<Exemplar>
+    + adicionarExemplar(exemplar : Exemplar) : void
 }
 
 
 class Exemplar {
-    - tombo : String
-    - item : Item
+    - tombo : String {readOnly}
+    - item : Item {readOnly}
     - status : StatusExemplar
 
     + Exemplar(tombo : String, item : Item)
 
     + getTombo() : String
-    + setTombo(tombo : String) : void
-
     + getItem() : Item
-    + setItem(item : Item) : void
 
     + getStatus() : StatusExemplar
     + setStatus(status : StatusExemplar) : void
+}
+
+
+class Usuario {
+    - matricula : String {readOnly}
+    - nome : String
+    - ativo : boolean
+    - emprestimosAtivos : int
+
+    + Usuario(matricula : String, nome : String)
+
+    + getMatricula() : String
+
+    + getNome() : String
+    + setNome(nome : String) : void
+
+    + isAtivo() : boolean
+    + setAtivo(ativo : boolean) : void
+
+    + getEmprestimosAtivos() : int
+    + incrementEmprestimosAtivos() : void
+    + decrementEmprestimosAtivos() : void
 }
 
 
@@ -94,7 +113,7 @@ class BibliotecaInicial {
 ' =========================================================
 
 class AcervoEmMemoria {
-    - itens : List<Item>
+    - itens : Map<String, Item>
 
     + cadastrarItem(codigo : String, titulo : String, autoria : String, categoria : String, ano : int) : void
     + buscarItem(codigo : String) : ItemView
@@ -108,8 +127,6 @@ class AcervoEmMemoria {
     - localizar(codigo : String) : Item
     - paraView(item : Item) : ItemView
     - exigirTextoPreenchido(valor : String, campo : String) : void
-
-    ~ itens() : List<Item>
 }
 
 
@@ -118,8 +135,7 @@ class AcervoEmMemoria {
 ' =========================================================
 
 class UsuariosEmMemoria {
-    - matriculas : List<String>
-    - nomes : List<String>
+    - usuarios : Map<String, Usuario>
 
     + cadastrarUsuario(matricula : String, nome : String) : void
     + buscarUsuario(matricula : String) : UsuarioView
@@ -268,9 +284,12 @@ BibliotecaInicial *-- RelatoriosNaoImplementados : possui
 ' RELACIONAMENTOS DOS SERVIÇOS
 ' =========================================================
 
-AcervoEmMemoria --> Item : gerencia
+AcervoEmMemoria "1" *-- "0..*" Item : gerencia (por código)
 AcervoEmMemoria --> ItemView : cria
 AcervoEmMemoria --> ExemplarView : cria
+
+UsuariosEmMemoria "1" *-- "0..*" Usuario : gerencia (por matrícula)
+UsuariosEmMemoria --> UsuarioView : cria
 
 RelatoriosNaoImplementados --> ItemView : utiliza
 RelatoriosNaoImplementados --> UsuarioView : utiliza
@@ -278,8 +297,6 @@ RelatoriosNaoImplementados --> EmprestimoView : utiliza
 
 EmprestimosNaoImplementados --> EmprestimoView : utiliza
 EmprestimosNaoImplementados --> ReservaView : utiliza
-
-UsuariosEmMemoria --> UsuarioView : cria
 
 
 ' =========================================================
