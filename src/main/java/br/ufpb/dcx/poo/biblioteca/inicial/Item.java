@@ -164,8 +164,6 @@ public class Item {
         }
     }
 
-    // ---- apoio à regra "ao devolver, o exemplar fica reservado para o primeiro da fila"
-
     private int exemplaresReservados() {
         int total = 0;
         for (Exemplar exemplar : exemplares.values()) {
