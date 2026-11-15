@@ -109,7 +109,15 @@ public class AcervoEmMemoria implements AcervoService {
     @Override
     public void baixarExemplar(String tombo)
             throws RecursoNaoEncontradoException, OperacaoNaoPermitidaException {
-        throw new UnsupportedOperationException("Entrega 2: implementar baixarExemplar");
+        exigirTextoPreenchido(tombo, "tombo");
+        for (Item item : itens.values()) {
+            Exemplar exemplar = item.buscarExemplar(tombo);
+            if (exemplar != null) {
+                exemplar.baixar();
+                return;
+            }
+        }
+        throw new RecursoNaoEncontradoException("Exemplar não encontrado: " + tombo);
     }
 
     private Item localizar(String codigo) {

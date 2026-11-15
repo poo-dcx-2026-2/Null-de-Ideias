@@ -40,8 +40,8 @@ Ao entregar, a equipe declara que:
 
 Assinaturas (nome e data):
 
-Andrêciele Ferreira da Cruz 12/11
+Andrêciele Ferreira da Cruz 14/11
 
-Ellen Cristine Da Silva 12/11
+Ellen Cristine Da Silva 14/11
 
-Mylena Paulino De Lima 12/11
+Mylena Paulino De Lima 14/11
