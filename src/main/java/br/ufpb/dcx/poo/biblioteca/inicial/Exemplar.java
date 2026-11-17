@@ -6,7 +6,7 @@ import br.ufpb.dcx.poo.biblioteca.contrato.excecoes.OperacaoNaoPermitidaExceptio
 
 public class Exemplar {
 
-    private String tombo;
+    private final String tombo;
     private Item item;
     private StatusExemplar status;
 
@@ -17,7 +17,6 @@ public class Exemplar {
     }
 
     public String getTombo() { return tombo; }
-    public void setTombo(String tombo) { this.tombo = tombo; }//Generalidade especulativa
 
     public Item getItem() { return item; }
     public void setItem(Item item) { this.item = item; }//Generalidade especulativa
