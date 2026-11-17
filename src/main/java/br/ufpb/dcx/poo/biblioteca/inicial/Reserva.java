@@ -5,7 +5,7 @@ import java.time.LocalDate;
 import br.ufpb.dcx.poo.biblioteca.contrato.ReservaView;
 
 public class Reserva {
-    private String id;
+    private final String id;
     private String codigoDoItem;
     private String matricula;
     private String nome;

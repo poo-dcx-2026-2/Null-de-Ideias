@@ -6,7 +6,7 @@ import br.ufpb.dcx.poo.biblioteca.contrato.excecoes.OperacaoNaoPermitidaExceptio
 
 public class Exemplar {
 
-    private String tombo;
+    private final String tombo;
     private Item item;
     private StatusExemplar status;
 
