@@ -42,7 +42,7 @@ public class Usuario {
     }
 
     public List<Emprestimo> getEmprestimos() {
-        return emprestimos;
+        return Collections.unmodifiableList(emprestimos);
     }
 
     public int emprestimosAtivos() {
@@ -99,7 +99,6 @@ public class Usuario {
         throw new RecursoNaoEncontradoException("Empréstimo ativo não encontrado para o tombo: " + tombo);
     }
 
-    /** Usado pelo serviço para achar quem está com o exemplar. */
     boolean temEmprestimoAtivoDe(String tombo) {
         for (Emprestimo emprestimo : emprestimos) {
             if (emprestimo.estaAtivo() && emprestimo.getExemplar().temTombo(tombo)) {
