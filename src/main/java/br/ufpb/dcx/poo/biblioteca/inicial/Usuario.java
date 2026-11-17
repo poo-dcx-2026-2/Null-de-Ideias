@@ -19,6 +19,7 @@ public class Usuario {
     private String nome;
     private boolean ativo = true;
     private final List<Emprestimo> emprestimos = new ArrayList<>();
+    private LocalDate dataFimSuspensao;
 
     public Usuario(String matricula, String nome) {
         this.matricula = matricula;
@@ -44,6 +45,15 @@ public class Usuario {
     public List<Emprestimo> getEmprestimos() {
         return emprestimos;
     }
+    public boolean estaSuspenso(LocalDate data) {
+        return dataFimSuspensao != null
+                && data.isBefore(dataFimSuspensao);
+    }
+    public void aplicarSuspensao(long diasAtraso, LocalDate data) {
+        if (diasAtraso > 0) {
+            this.dataFimSuspensao = data.plusDays(diasAtraso);
+        }
+    }
 
     public int emprestimosAtivos() {
         int ativos = 0;
@@ -57,12 +67,17 @@ public class Usuario {
 
 
     public Emprestimo emprestar(String id, Exemplar exemplar, LocalDate data)
-            throws UsuarioInativoException, ExemplarIndisponivelException,
-            LimiteDeEmprestimosExcedidoException {
+            throws UsuarioInativoException, ExemplarIndisponivelException, LimiteDeEmprestimosExcedidoException{
 
         if (!ativo) {
             throw new UsuarioInativoException("Usuário inativo: " + matricula);
         }
+        if (estaSuspenso(data)) {
+            throw new UsuarioInativoException(
+                    "Usuário está suspenso e não pode realizar empréstimos."
+            );
+        }
+
         if (!exemplar.podeSerEmprestadoA(this)) {
             throw new ExemplarIndisponivelException("Exemplar indisponível: " + exemplar.getTombo());
         }
@@ -91,6 +106,12 @@ public class Usuario {
     public void devolver(String tombo, LocalDate data) throws RecursoNaoEncontradoException {
         for (Emprestimo emprestimo : emprestimos) {
             if (emprestimo.estaAtivo() && emprestimo.getExemplar().temTombo(tombo)) {
+                long diasAtraso = emprestimo.diasDeAtrasoEm(data);
+
+                if (diasAtraso > 0) {
+                    aplicarSuspensao(diasAtraso, data);
+                }
+
                 emprestimo.registrarDevolucao(data);
                 emprestimo.getExemplar().marcarComoDisponivel();
                 return;
