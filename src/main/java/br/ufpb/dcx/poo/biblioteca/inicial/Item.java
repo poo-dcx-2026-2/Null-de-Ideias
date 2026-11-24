@@ -17,6 +17,7 @@ public class Item {
     private String autoria;
     private String categoria;
     private int ano;
+    private ClassificacaoIndicativa classificacaoIndicativa;
     private final Map<String, Exemplar> exemplares = new HashMap<>();
 
     public Item(String codigo, String titulo, String autoria, String categoria, int ano) {
@@ -190,4 +191,9 @@ public class Item {
             }
         }
     }
+    private void classificar(ClassificacaoIndicativa classificacao){
+        this.classificacaoIndicativa = classificacao;
+    }
+
+
 }

@@ -20,6 +20,7 @@ public class Usuario {
     private boolean ativo = true;
     private final List<Emprestimo> emprestimos = new ArrayList<>();
     private LocalDate dataFimSuspensao;
+    private int idade;
 
     public Usuario(String matricula, String nome) {
         this.matricula = matricula;
