@@ -27,7 +27,7 @@ public class UsuariosEmMemoria implements UsuarioService {
 
     @Override
     public UsuarioView buscarUsuario(String matricula) throws RecursoNaoEncontradoException {
-       Usuario usuario = usuarios.get(matricula);
+        Usuario usuario = usuarios.get(matricula);
         if (usuario ==null) {
             throw new RecursoNaoEncontradoException("Usuário não encontrado: " + matricula);
         }
@@ -48,16 +48,20 @@ public class UsuariosEmMemoria implements UsuarioService {
     public void desativarUsuario(String matricula)
             throws RecursoNaoEncontradoException, OperacaoNaoPermitidaException {
         Usuario usuario = buscarUsuarioOuFalhar(matricula);
-        if (usuario.temEmprestimosAtivos()) {
+        if (usuario.emprestimosAtivos() > 0) {
             throw new OperacaoNaoPermitidaException(
                     "Usuário " + matricula + " possui empréstimos ativos e não pode ser desativado.");
         }
-        usuario.desativar();
+        usuario.setAtivo(false);
     }
 
     @Override
     public void reativarUsuario(String matricula) throws RecursoNaoEncontradoException {
-        buscarUsuarioOuFalhar(matricula).reativar();
+        buscarUsuarioOuFalhar(matricula).setAtivo(true);
+    }
+
+    Collection<Usuario> todos() {
+        return usuarios.values();
     }
 
     private static void exigirTextoPreenchido(String valor, String campo) {
@@ -66,7 +70,7 @@ public class UsuariosEmMemoria implements UsuarioService {
         }
     }
 
-    private Usuario buscarUsuarioOuFalhar(String matricula) throws RecursoNaoEncontradoException {
+    Usuario buscarUsuarioOuFalhar(String matricula) throws RecursoNaoEncontradoException {
         exigirTextoPreenchido(matricula, "matricula");
         Usuario usuario = usuarios.get(matricula);
         if (usuario == null) {

@@ -64,13 +64,18 @@ public class AcervoEmMemoria implements AcervoService {
     public List<ItemView> buscarPorCategoria(String categoria) {
         exigirTextoPreenchido(categoria, "categoria");
         List<ItemView> resultado = new ArrayList<>();
-        for (Item item: itens.values()){
-            if (item.temCategoria(categoria)){
+        for (Item item : itens.values()) {
+            if (item.temCategoria(categoria)) {
                 resultado.add(item.paraView());
             }
         }
-        resultado.sort(Comparator.comparing(ItemView::titulo));
+        ordenarPorTitulo(resultado);
         return resultado;
+    }
+
+    private static void ordenarPorTitulo(List<ItemView> visoes) {
+        Collator collator = Collator.getInstance(new Locale("pt", "BR"));
+        visoes.sort((a, b) -> collator.compare(a.titulo(), b.titulo()));
     }
 
     @Override
@@ -80,16 +85,16 @@ public class AcervoEmMemoria implements AcervoService {
         exigirTextoPreenchido(tombo, "tombo");
         Item item = buscarItemOuFalhar(codigoDoItem);
         for (Item outro : itens.values()) {
-                if (outro.exemplarComTombo(tombo)) {
-                    throw new RecursoDuplicadoException("Já existe exemplar com o tombo " + tombo);
-                }
+            if (outro.exemplarComTombo(tombo)) {
+                throw new RecursoDuplicadoException("Já existe exemplar com o tombo " + tombo);
+            }
         }
 
         item.adicionarExemplar(new Exemplar(tombo, item));
 
     }
 
-    private Item buscarItemOuFalhar(String codigoDoItem) throws RecursoNaoEncontradoException {
+    Item buscarItemOuFalhar(String codigoDoItem) throws RecursoNaoEncontradoException {
         Item item = localizar(codigoDoItem);
         if (item == null) {
             throw new RecursoNaoEncontradoException("Item não encontrado: " + codigoDoItem);
@@ -100,19 +105,19 @@ public class AcervoEmMemoria implements AcervoService {
     @Override
     public List<ExemplarView> listarExemplares(String codigoDoItem)
             throws RecursoNaoEncontradoException {
-            exigirTextoPreenchido(codigoDoItem, "codigo do item");
+        exigirTextoPreenchido(codigoDoItem, "codigo do item");
         Item item = buscarItemOuFalhar(codigoDoItem);
 
         List<ExemplarView> listaDeExemplares = new ArrayList<>();
 
-            for (Exemplar exemplarAtual : item.getExemplares()) {
-                listaDeExemplares.add(exemplarAtual.paraView());
-            }
-
-            listaDeExemplares.sort(Comparator.comparing(ExemplarView::tombo));
-
-            return listaDeExemplares;
+        for (Exemplar exemplarAtual : item.getExemplares()) {
+            listaDeExemplares.add(exemplarAtual.paraView());
         }
+
+        listaDeExemplares.sort(Comparator.comparing(ExemplarView::tombo));
+
+        return listaDeExemplares;
+    }
 
     @Override
     public void baixarExemplar(String tombo)
@@ -123,6 +128,17 @@ public class AcervoEmMemoria implements AcervoService {
             if (exemplar != null) {
                 exemplar.baixar();
                 return;
+            }
+        }
+        throw new RecursoNaoEncontradoException("Exemplar não encontrado: " + tombo);
+    }
+
+    Exemplar buscarExemplarOuFalhar(String tombo) throws RecursoNaoEncontradoException {
+        exigirTextoPreenchido(tombo, "tombo");
+        for (Item item : itens.values()) {
+            Exemplar exemplar = item.buscarExemplar(tombo);
+            if (exemplar != null) {
+                return exemplar;
             }
         }
         throw new RecursoNaoEncontradoException("Exemplar não encontrado: " + tombo);

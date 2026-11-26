@@ -1,17 +1,15 @@
 package br.ufpb.dcx.poo.biblioteca.inicial;
 
 import br.ufpb.dcx.poo.biblioteca.contrato.ItemView;
+import br.ufpb.dcx.poo.biblioteca.contrato.ReservaView;
+import br.ufpb.dcx.poo.biblioteca.contrato.StatusExemplar;
+import br.ufpb.dcx.poo.biblioteca.contrato.excecoes.DadosInvalidosException;
+import br.ufpb.dcx.poo.biblioteca.contrato.excecoes.RecursoNaoEncontradoException;
+import br.ufpb.dcx.poo.biblioteca.contrato.excecoes.UsuarioInativoException;
 
+import java.time.LocalDate;
 import java.util.*;
 
-/**
- * Um item do acervo: um livro, um filme, um jogo, um instrumento.
- *
- * <p>Esta classe é ponto de partida, não modelo a seguir. Ela existe para que o
- * projeto compile e execute desde o primeiro dia. Ao longo do semestre você vai
- * decidir se ela permanece assim, se ganha invariantes, se vira uma hierarquia,
- * se delega responsabilidades ou se desaparece.</p>
- */
 public class Item {
 
     private final String codigo;
@@ -79,5 +77,117 @@ public class Item {
 
     public ItemView paraView() {
         return new ItemView(codigo, titulo, autoria, categoria, ano, exemplares(), exemplaresDisponiveis());
+    }
+
+    private final List<Reserva> reservas = new ArrayList<>();
+
+
+    public Reserva reservar(String id, Usuario usuario, LocalDate data)
+            throws UsuarioInativoException, DadosInvalidosException {
+
+        if (!usuario.isAtivo()) {
+            throw new UsuarioInativoException("Usuário inativo: " + usuario.getMatricula());
+        }
+
+        if (exemplaresDisponiveis() > 0) {
+            throw new DadosInvalidosException("Item possui exemplares disponíveis para empréstimo.");
+        }
+
+        for (Reserva reserva : reservas) {
+            if (reserva.pertenceAoUsuario(usuario.getMatricula())) {
+                throw new DadosInvalidosException("Usuário já possui reserva para este item.");
+            }
+        }
+
+        int posicao = reservas.size() + 1;
+        Reserva novaReserva = new Reserva(
+                id,
+                this.codigo,
+                usuario.getMatricula(),
+                usuario.getNome(),
+                data,
+                posicao
+        );
+        reservas.add(novaReserva);
+        usuario.adicionarReserva(novaReserva);
+
+        return novaReserva;
+    }
+
+    public List<Reserva> getReservas() {
+        return Collections.unmodifiableList(reservas);
+    }
+
+    public int tamanhoDaFila() {
+        return reservas.size();
+    }
+
+    public List<ReservaView> listarReservas() {
+        List<ReservaView> resultado = new ArrayList<>();
+        for (Reserva reserva : reservas) {
+            resultado.add(reserva.paraView());
+        }
+        return resultado;
+    }
+
+    public Reserva proximaDaFila() {
+        return reservas.isEmpty() ? null : reservas.get(0);
+    }
+
+    public void cancelarReserva(Usuario usuario) throws RecursoNaoEncontradoException {
+        for (Reserva reserva : reservas) {
+            if (reserva.pertenceAoUsuario(usuario.getMatricula())) {
+                reservas.remove(reserva);
+                usuario.removerReserva(reserva);
+                reordenarFila();
+                liberarExemplaresSemFila();
+                return;
+            }
+        }
+        throw new RecursoNaoEncontradoException(
+                "Reserva não encontrada para o usuário " + usuario.getMatricula()
+                        + " no item " + codigo);
+    }
+
+    public Reserva removerPrimeiraDaFila() {
+        if (reservas.isEmpty()) {
+            return null;
+        }
+        Reserva primeira = reservas.remove(0);
+        reordenarFila();
+        return primeira;
+    }
+
+    private void reordenarFila() {
+        for (int i = 0; i < reservas.size(); i++) {
+            reservas.get(i).atualizarPosicao(i + 1);
+        }
+    }
+
+    private int exemplaresReservados() {
+        int total = 0;
+        for (Exemplar exemplar : exemplares.values()) {
+            if (exemplar.getStatus() == StatusExemplar.RESERVADO) {
+                total++;
+            }
+        }
+        return total;
+    }
+
+    boolean temFilaPendente() {
+        return reservas.size() > exemplaresReservados();
+    }
+
+    private void liberarExemplaresSemFila() {
+        int sobrando = exemplaresReservados() - reservas.size();
+        for (Exemplar exemplar : exemplares.values()) {
+            if (sobrando <= 0) {
+                break;
+            }
+            if (exemplar.getStatus() == StatusExemplar.RESERVADO) {
+                exemplar.marcarComoDisponivel();
+                sobrando--;
+            }
+        }
     }
 }

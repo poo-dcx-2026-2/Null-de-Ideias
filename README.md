@@ -31,30 +31,54 @@ BUILD SUCCESS
 ```
 src/main/java/br/ufpb/dcx/poo/biblioteca/
 ├── contrato/          ← CONGELADO. Não edite nada aqui.
-│   ├── Biblioteca.java              ponto único de acesso aos serviços
+│   ├── Biblioteca.java              porta de entrada única (Facade): acervo(), usuarios(),
+│   │                                emprestimos(), relatorios(), salvar(), carregar()
 │   ├── AcervoService.java           itens e exemplares
 │   ├── UsuarioService.java          usuários
 │   ├── EmprestimoService.java       empréstimos, devoluções e reservas
-│   ├── RelatorioService.java        consultas e importação em lote
+│   ├── RelatorioService.java        relatórios (Entrega 3)
 │   ├── *View.java                   o que as consultas devolvem
 │   ├── Status*.java                 estados de exemplar e de empréstimo
 │   └── excecoes/                    a hierarquia de erros do sistema
 │
-├── Fabrica.java       ← nome e assinatura congelados; o corpo é seu
+├── Fabrica.java       ← devolve uma BibliotecaInicial nova e vazia a cada chamada
 │
-└── inicial/           ← ponto de partida; altere, mova, renomeie ou apague
-    ├── Item.java                    item do acervo e seus exemplares
-    ├── Exemplar.java                cópia física do item, identificada pelo tombo
-    ├── Usuario.java                 matrícula, nome, ativo e empréstimos ativos
-    ├── AcervoEmMemoria.java         serviço do acervo
-    ├── UsuariosEmMemoria.java       serviço de usuários
-    ├── EmprestimosNaoImplementados.java
-    ├── RelatoriosNaoImplementados.java
-    └── BibliotecaInicial.java
+├── inicial/           ← domínio e serviços
+│   ├── Item.java                    item do acervo, seus exemplares (por tombo) e a fila de reservas
+│   ├── Exemplar.java                cópia física do item, identificada pelo tombo
+│   ├── Usuario.java                 matrícula, nome, ativo, empréstimos, reservas e suspensão por atraso
+│   ├── Emprestimo.java              empréstimo com identidade, datas e regra de atraso
+│   ├── Reserva.java                 reserva com identidade e posição na fila
+│   ├── AcervoEmMemoria.java         serviço do acervo
+│   ├── UsuariosEmMemoria.java       serviço de usuários
+│   ├── EmprestimosEmMemoria.java    serviço de empréstimos e reservas
+│   ├── RelatoriosNaoImplementados.java   esqueleto (Entrega 3)
+│   └── BibliotecaInicial.java       implementa Biblioteca; une os serviços e chama a persistência
+│
+├── persistencia/      ← toda a leitura e escrita de arquivo (o domínio não faz E/S)
+│   ├── DiretorioDeDados.java        onde ficam os dados (ver "Onde ficam os dados")
+│   ├── ArquivoDeItens.java          grava e lê o arquivo de itens, com try-with-resources
+│   └── LinhaDeItem.java             uma linha do arquivo de itens
+│
+└── tela/
+    └── TelaDeConsulta.java          exemplo de uso do sistema apenas pela interface Biblioteca
 
-src/test/java/…       ← seus testes; comece pelos que já estão aqui
-dados/                ← arquivos de exemplo
-.github/workflows/    ← a integração contínua, já configurada
+src/test/java/br/ufpb/dcx/poo/biblioteca/   ← testes JUnit 5
+├── AcervoTest.java                  acervo: itens, exemplares, buscas, baixa, regressão do `==`
+├── ItemTest.java                    lista de exemplares devolvida é imutável
+├── UsuarioTest.java                 serviço de usuários: cadastro, duplicidade, ordenação
+├── FabricaTest.java                 a Fabrica entrega bibliotecas completas e independentes
+├── FacadeEPercistenciaTest.java     consulta por categoria na Facade e salvar/carregar itens
+├── EmprestimoDominioTest.java       Emprestimo: prazo, atraso, devolução e view
+├── UsuarioDominioTest.java          Usuario: emprestar/devolver, limite, inativo, equals
+├── ReservaEFilaDominioTest.java     Reserva e fila: posições, cancelamento, exemplar reservado
+└── RegressaoDasRefatoracoesTest.java   identidade final, listas sem vazamento, bibliotecas independentes
+
+dados/                ← itens-exemplo.csv (arquivo de exemplo, não sobrescrever)
+docs/                 ← modelo.puml, modelo.png, decisoes.md, devolutiva da Entrega 1
+.github/workflows/    ← integração contínua (mvn -B verify)
+pom.xml               ← build Maven (JDK 21, JUnit 5)
+DECLARACAO-DE-USO-DE-IA.md   ← declaração de uso de ferramentas de IA
 ```
 
 ---
@@ -63,13 +87,13 @@ dados/                ← arquivos de exemplo
 
 A identidade de cada entidade é definida na construção e não muda depois: `Item.codigo`, `Exemplar.tombo` e `Usuario.matricula` são campos `final`, sem setter. Assim, uma chave que já está guardada em um `Map` não pode ser trocada por fora. O nome do usuário pode mudar (para permitir nome social), e o estado de ativo e a contagem de empréstimos só mudam por métodos próprios (`setAtivo`, `incrementEmprestimosAtivos`, `decrementEmprestimosAtivos`).
 
-| Estrutura | Onde | Uso | Justificativa |
-|---|---|---|---|
-| `Map<String, Item>` (`LinkedHashMap`) | `AcervoEmMemoria` | Itens do acervo, com o código como chave | `buscarItem` e a checagem de código repetido precisam achar o item pelo código sem percorrer a lista inteira. O `LinkedHashMap` mantém a ordem de cadastro; a ordenação por título é feita em `listarItens`. |
-| `List<Exemplar>` | `Item` | Exemplares que pertencem a um item | Representa a composição item–exemplar: o exemplar só existe ligado a um item, e a ordem de cadastro é preservada. A ordenação por tombo é feita em `listarExemplares`. |
+| Estrutura                              | Onde | Uso | Justificativa |
+|----------------------------------------|---|---|---|
+| `Map<String, Item>` (`HashMap`)  | `AcervoEmMemoria` | Itens do acervo, com o código como chave | `buscarItem` e a checagem de código repetido precisam achar o item pelo código sem percorrer a lista inteira. O `HashMap` mantém a ordem de cadastro; a ordenação por título é feita em `listarItens`. |
+| `Map<String, Exemplar>` (`HashMap`)       | `Item` | Exemplares que pertencem a um item, com o tombo como chave | Continua representando a composição item–exemplar: o exemplar só existe ligado a um item. Com o mapa, buscarExemplar e exemplarComTombo (usados por baixarExemplar, emprestar, devolver e pela checagem de tombo repetido) acham o exemplar pelo tombo sem percorrer uma lista. O HashMap não guarda a ordem de cadastro, então a ordem vem da ordenação por tombo feita em listarExemplares. |
 | `Map<String, Usuario>` (`LinkedHashMap`) | `UsuariosEmMemoria` | Usuários, com a matrícula como chave | Buscar por matrícula e checar matrícula repetida são operações diretas. Elimina as duas listas paralelas que existiam (matrículas e nomes) e mantém matrícula e nome no mesmo objeto. |
 
-Nenhuma coleção interna é devolvida a quem chama. `Item.getExemplares()` devolve uma cópia imutável (`List.copyOf`), e as consultas dos serviços devolvem `ItemView`, `ExemplarView` e `UsuarioView` (tipos do contrato), e não as entidades. Assim, o estado do domínio não vaza e só muda pelas operações que aplicam as regras.
+Nenhuma coleção interna é devolvida a quem chama. Item.getExemplares() devolve uma cópia imutável (List.copyOf), e as consultas dos serviços devolvem ItemView, ExemplarView e UsuarioView (tipos do contrato), e não as entidades. Assim, o estado do domínio não vaza e só muda pelas operações que aplicam as regras.
 
 ---
 

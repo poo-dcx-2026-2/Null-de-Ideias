@@ -4,14 +4,9 @@ import br.ufpb.dcx.poo.biblioteca.contrato.ExemplarView;
 import br.ufpb.dcx.poo.biblioteca.contrato.StatusExemplar;
 import br.ufpb.dcx.poo.biblioteca.contrato.excecoes.OperacaoNaoPermitidaException;
 
-/**
- * A cópia física de um item. O que se empresta é o exemplar, não o item.
- *
- * <p>Ponto de partida, como {@link Item}.</p>
- */
 public class Exemplar {
 
-    private String tombo;
+    private final String tombo;
     private Item item;
     private StatusExemplar status;
 
@@ -22,13 +17,10 @@ public class Exemplar {
     }
 
     public String getTombo() { return tombo; }
-    public void setTombo(String tombo) { this.tombo = tombo; }//Generalidade especulativa
 
     public Item getItem() { return item; }
-    public void setItem(Item item) { this.item = item; }//Generalidade especulativa
 
     public StatusExemplar getStatus() { return status; }
-    public void setStatus(StatusExemplar status) { this.status = status; }//Generalidade especulativa
 
     public boolean isDisponivel() {
         return status == StatusExemplar.DISPONIVEL;
@@ -42,11 +34,40 @@ public class Exemplar {
         return new ExemplarView(tombo, item.getCodigo(), status);
     }
 
+    public boolean podeSerEmprestadoA(Usuario usuario) {
+        if (this.status == StatusExemplar.DISPONIVEL) {
+            return true;
+        }
+        if (this.status == StatusExemplar.RESERVADO) {
+            Reserva primeira = item.proximaDaFila();
+            return primeira != null && primeira.pertenceAoUsuario(usuario.getMatricula());
+        }
+        return false;
+    }
+
+    public void marcarComoEmprestado() {
+        this.status = StatusExemplar.EMPRESTADO;
+    }
+
+    public void marcarComoDisponivel() {
+        this.status = StatusExemplar.DISPONIVEL;
+    }
+
+    public void marcarComoReservado() {
+        this.status = StatusExemplar.RESERVADO;
+    }
+
     public void baixar() throws OperacaoNaoPermitidaException {
         if (status == StatusExemplar.EMPRESTADO) {
             throw new OperacaoNaoPermitidaException(
                     "Exemplar emprestado não pode ser baixado: " + tombo);
         }
+
+        if (status == StatusExemplar.INDISPONIVEL) {
+            throw new OperacaoNaoPermitidaException(
+                    "Exemplar já está indisponível: " + tombo);
+        }
+
         status = StatusExemplar.INDISPONIVEL;
     }
 }
