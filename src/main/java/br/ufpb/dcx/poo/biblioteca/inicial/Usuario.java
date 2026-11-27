@@ -1,6 +1,7 @@
 package br.ufpb.dcx.poo.biblioteca.inicial;
 
 import java.time.LocalDate;
+import java.time.Period;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -20,6 +21,7 @@ public class Usuario {
     private boolean ativo = true;
     private final List<Emprestimo> emprestimos = new ArrayList<>();
     private LocalDate dataFimSuspensao;
+    private LocalDate dataDeNascimento;
 
     public Usuario(String matricula, String nome) {
         this.matricula = matricula;
@@ -40,6 +42,20 @@ public class Usuario {
 
     public boolean isAtivo() {
         return ativo;
+    }
+
+    public LocalDate getDataDeNascimento() {
+        return dataDeNascimento;
+    }
+
+    public void setDataDeNascimento(LocalDate dataDeNascimento) {
+        this.dataDeNascimento = dataDeNascimento;
+    }
+    public int getIdade(LocalDate data){
+        if(this.dataDeNascimento == null || data == null){
+            return 0;
+        }
+        return Period.between(this.dataDeNascimento, data).getYears();
     }
 
     public List<Emprestimo> getEmprestimos() {
@@ -67,7 +83,7 @@ public class Usuario {
 
 
     public Emprestimo emprestar(String id, Exemplar exemplar, LocalDate data)
-            throws UsuarioInativoException, ExemplarIndisponivelException, LimiteDeEmprestimosExcedidoException{
+            throws UsuarioInativoException, ExemplarIndisponivelException, LimiteDeEmprestimosExcedidoException,RecursoNaoEncontradoException{
 
         if (!ativo) {
             throw new UsuarioInativoException("Usuário inativo: " + matricula);
@@ -78,7 +94,7 @@ public class Usuario {
             );
         }
 
-        if (!exemplar.podeSerEmprestadoA(this)) {
+        if (!exemplar.podeSerEmprestadoA(this,data)) {
             throw new ExemplarIndisponivelException("Exemplar indisponível: " + exemplar.getTombo());
         }
         if (emprestimosAtivos() >= EmprestimoService.LIMITE_DE_EMPRESTIMOS) {

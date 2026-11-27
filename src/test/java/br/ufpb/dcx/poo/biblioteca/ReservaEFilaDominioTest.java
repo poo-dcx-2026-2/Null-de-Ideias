@@ -174,9 +174,9 @@ class ReservaEFilaDominioTest {
         item.reservar("R2", bruno, DIA);
         exemplar.marcarComoReservado();
 
-        assertTrue(exemplar.podeSerEmprestadoA(ana));
-        assertFalse(exemplar.podeSerEmprestadoA(bruno));
-        assertFalse(exemplar.podeSerEmprestadoA(carla));
+        assertTrue(exemplar.podeSerEmprestadoA(ana,DIA));
+        assertFalse(exemplar.podeSerEmprestadoA(bruno,DIA));
+        assertFalse(exemplar.podeSerEmprestadoA(carla,DIA));
     }
 
     @Test
@@ -184,13 +184,13 @@ class ReservaEFilaDominioTest {
     void podeSerEmprestadoPorStatus() throws Exception {
         Exemplar exemplar = new Exemplar("T1", item);
 
-        assertTrue(exemplar.podeSerEmprestadoA(carla));
+        assertTrue(exemplar.podeSerEmprestadoA(carla,DIA));
 
         exemplar.marcarComoEmprestado();
-        assertFalse(exemplar.podeSerEmprestadoA(carla));
+        assertFalse(exemplar.podeSerEmprestadoA(carla,DIA));
 
         exemplar.marcarComoDisponivel();
         exemplar.baixar();
-        assertFalse(exemplar.podeSerEmprestadoA(carla));
+        assertFalse(exemplar.podeSerEmprestadoA(carla,DIA));
     }
 }

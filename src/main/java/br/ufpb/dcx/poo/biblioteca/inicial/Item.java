@@ -17,6 +17,7 @@ public class Item {
     private String autoria;
     private String categoria;
     private int ano;
+    private ClassificacaoIndicativa classificacaoIndicativa;
     private final Map<String, Exemplar> exemplares = new HashMap<>();
 
     public Item(String codigo, String titulo, String autoria, String categoria, int ano) {
@@ -38,6 +39,13 @@ public class Item {
     public String getCategoria() { return categoria; }
     public void setCategoria(String categoria) { this.categoria = categoria; }
 
+    public ClassificacaoIndicativa getClassificacaoIndicativa() {
+        return classificacaoIndicativa;
+    }
+    public void setClassificacaoIndicativa(ClassificacaoIndicativa classificacaoIndicativa) {
+        this.classificacaoIndicativa = classificacaoIndicativa;
+    }
+
     public int getAno() { return ano; }
     public void setAno(int ano) { this.ano = ano; }
 
@@ -53,6 +61,15 @@ public class Item {
             }
         }
         return disponiveis;
+    }
+    public boolean poderSerReservado(Usuario usuario, LocalDate dataReserva) {
+        if (this.classificacaoIndicativa != null){
+            if (!this.classificacaoIndicativa.permiteIdade(usuario.getIdade(dataReserva))){
+                return false;
+            }
+        }
+        return true;
+
     }
 
     public void adicionarExemplar(Exemplar exemplar) {
@@ -97,6 +114,9 @@ public class Item {
             if (reserva.pertenceAoUsuario(usuario.getMatricula())) {
                 throw new DadosInvalidosException("Usuário já possui reserva para este item.");
             }
+        }
+        if (!poderSerReservado(usuario, data)) {
+            throw new DadosInvalidosException("Usuário não tem a idade mínima exigida para este item.");
         }
 
         int posicao = reservas.size() + 1;
@@ -190,4 +210,9 @@ public class Item {
             }
         }
     }
+    private void classificar(ClassificacaoIndicativa classificacao){
+        this.classificacaoIndicativa = classificacao;
+    }
+
+
 }
