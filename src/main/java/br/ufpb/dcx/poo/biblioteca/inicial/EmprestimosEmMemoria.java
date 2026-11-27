@@ -2,6 +2,8 @@ package br.ufpb.dcx.poo.biblioteca.inicial;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.function.Supplier;
 
@@ -40,12 +42,15 @@ public class EmprestimosEmMemoria implements EmprestimoService {
             throws RecursoNaoEncontradoException, ExemplarIndisponivelException,
             UsuarioInativoException, LimiteDeEmprestimosExcedidoException {
 
+        exigirTextoPreenchido(tombo, "tombo");
+        exigirTextoPreenchido(matricula, "matricula");
+        exigirDataPreenchida(data, "data");
+
         Usuario usuario = usuarios.buscarUsuarioOuFalhar(matricula);
         Exemplar exemplar = acervo().buscarExemplarOuFalhar(tombo);
 
         Emprestimo emprestimo = usuario.emprestar(proximoIdDeEmprestimo(), exemplar, data);
 
-        // Se o usuário era o primeiro da fila deste item, a reserva foi atendida.
         Item item = exemplar.getItem();
         Reserva primeira = item.proximaDaFila();
         if (primeira != null && primeira.pertenceAoUsuario(matricula)) {
@@ -60,12 +65,14 @@ public class EmprestimosEmMemoria implements EmprestimoService {
     public void devolver(String tombo, LocalDate data)
             throws RecursoNaoEncontradoException, OperacaoNaoPermitidaException {
 
-        Exemplar exemplar = acervo().buscarExemplarOuFalhar(tombo); // inexistente -> RecursoNaoEncontrado
+        exigirTextoPreenchido(tombo, "tombo");
+        exigirDataPreenchida(data, "data");
+
+        Exemplar exemplar = acervo().buscarExemplarOuFalhar(tombo);
 
         for (Usuario usuario : usuarios.todos()) {
             if (usuario.temEmprestimoAtivoDe(tombo)) {
                 usuario.devolver(tombo, data);
-                // Com fila de espera, o exemplar fica guardado em vez de voltar a ficar disponível.
                 if (exemplar.getItem().temFilaPendente()) {
                     exemplar.marcarComoReservado();
                 }
@@ -80,10 +87,14 @@ public class EmprestimosEmMemoria implements EmprestimoService {
             throws RecursoNaoEncontradoException {
 
         Usuario usuario = usuarios.buscarUsuarioOuFalhar(matricula);
+        List<Emprestimo> maisRecenteDoCadastroPrimeiro = new ArrayList<>(usuario.getEmprestimos());
+        Collections.reverse(maisRecenteDoCadastroPrimeiro);
+
         List<EmprestimoView> resultado = new ArrayList<>();
-        for (Emprestimo emprestimo : usuario.getEmprestimos()) {
+        for (Emprestimo emprestimo : maisRecenteDoCadastroPrimeiro) {
             resultado.add(emprestimo.paraView(SEM_DATA_DE_REFERENCIA));
         }
+        resultado.sort(Comparator.comparing(EmprestimoView::dataDoEmprestimo).reversed());
         return resultado;
     }
 
@@ -97,12 +108,17 @@ public class EmprestimosEmMemoria implements EmprestimoService {
                 }
             }
         }
+        resultado.sort(Comparator.comparing(EmprestimoView::dataPrevistaDeDevolucao));
         return resultado;
     }
 
     @Override
     public String reservar(String codigoDoItem, String matricula, LocalDate data)
             throws RecursoNaoEncontradoException, OperacaoNaoPermitidaException {
+
+        exigirTextoPreenchido(codigoDoItem, "codigo do item");
+        exigirTextoPreenchido(matricula, "matricula");
+        exigirDataPreenchida(data, "data");
 
         Item item = acervo().buscarItemOuFalhar(codigoDoItem);
         Usuario usuario = usuarios.buscarUsuarioOuFalhar(matricula);
@@ -111,8 +127,6 @@ public class EmprestimosEmMemoria implements EmprestimoService {
             Reserva reserva = item.reservar(proximoIdDeReserva(), usuario, data);
             return reserva.getId();
         } catch (DadosInvalidosException e) {
-            // Item com exemplar disponível ou usuário que já está na fila: o contrato pede
-            // OperacaoNaoPermitidaException.
             throw new OperacaoNaoPermitidaException(e.getMessage());
         }
     }
@@ -120,6 +134,8 @@ public class EmprestimosEmMemoria implements EmprestimoService {
     @Override
     public List<ReservaView> listarReservas(String codigoDoItem)
             throws RecursoNaoEncontradoException {
+
+        exigirTextoPreenchido(codigoDoItem, "codigo do item");
 
         return acervo().buscarItemOuFalhar(codigoDoItem).listarReservas();
     }
@@ -146,5 +162,17 @@ public class EmprestimosEmMemoria implements EmprestimoService {
     private String proximoIdDeReserva() {
         contadorDeReservas++;
         return "R" + contadorDeReservas;
+    }
+
+    private static void exigirTextoPreenchido(String valor, String campo) {
+        if (valor == null || valor.isBlank()) {
+            throw new DadosInvalidosException("O campo " + campo + " é obrigatório.");
+        }
+    }
+
+    private static void exigirDataPreenchida(LocalDate valor, String campo) {
+        if (valor == null) {
+            throw new DadosInvalidosException("O campo " + campo + " é obrigatório.");
+        }
     }
 }

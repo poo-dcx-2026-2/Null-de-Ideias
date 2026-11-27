@@ -7,7 +7,7 @@ import java.time.LocalDate;
 
 public class Exemplar {
 
-    private String tombo;
+    private final String tombo;
     private Item item;
     private StatusExemplar status;
 
@@ -18,13 +18,10 @@ public class Exemplar {
     }
 
     public String getTombo() { return tombo; }
-    public void setTombo(String tombo) { this.tombo = tombo; }//Generalidade especulativa
 
     public Item getItem() { return item; }
-    public void setItem(Item item) { this.item = item; }//Generalidade especulativa
 
     public StatusExemplar getStatus() { return status; }
-    public void setStatus(StatusExemplar status) { this.status = status; }//Generalidade especulativa
 
     public boolean isDisponivel() {
         return status == StatusExemplar.DISPONIVEL;
@@ -37,6 +34,7 @@ public class Exemplar {
     public ExemplarView paraView() {
         return new ExemplarView(tombo, item.getCodigo(), status);
     }
+
 
     /** Disponível: qualquer usuário. Reservado: só o primeiro da fila do item. */
     public boolean podeSerEmprestadoA(Usuario usuario,LocalDate data) {
@@ -72,6 +70,12 @@ public class Exemplar {
             throw new OperacaoNaoPermitidaException(
                     "Exemplar emprestado não pode ser baixado: " + tombo);
         }
+
+        if (status == StatusExemplar.INDISPONIVEL) {
+            throw new OperacaoNaoPermitidaException(
+                    "Exemplar já está indisponível: " + tombo);
+        }
+
         status = StatusExemplar.INDISPONIVEL;
     }
 }

@@ -44,9 +44,9 @@ src/main/java/br/ufpb/dcx/poo/biblioteca/
 ├── Fabrica.java       ← devolve uma BibliotecaInicial nova e vazia a cada chamada
 │
 ├── inicial/           ← domínio e serviços
-│   ├── Item.java                    item do acervo, seus exemplares e a fila de reservas
+│   ├── Item.java                    item do acervo, seus exemplares (por tombo) e a fila de reservas
 │   ├── Exemplar.java                cópia física do item, identificada pelo tombo
-│   ├── Usuario.java                 matrícula, nome, ativo, empréstimos e reservas
+│   ├── Usuario.java                 matrícula, nome, ativo, empréstimos, reservas e suspensão por atraso
 │   ├── Emprestimo.java              empréstimo com identidade, datas e regra de atraso
 │   ├── Reserva.java                 reserva com identidade e posição na fila
 │   ├── AcervoEmMemoria.java         serviço do acervo
@@ -63,10 +63,22 @@ src/main/java/br/ufpb/dcx/poo/biblioteca/
 └── tela/
     └── TelaDeConsulta.java          exemplo de uso do sistema apenas pela interface Biblioteca
 
-src/test/java/…       ← testes JUnit 5 (acervo, usuários, empréstimo, reserva, persistência)
+src/test/java/br/ufpb/dcx/poo/biblioteca/   ← testes JUnit 5
+├── AcervoTest.java                  acervo: itens, exemplares, buscas, baixa, regressão do `==`
+├── ItemTest.java                    lista de exemplares devolvida é imutável
+├── UsuarioTest.java                 serviço de usuários: cadastro, duplicidade, ordenação
+├── FabricaTest.java                 a Fabrica entrega bibliotecas completas e independentes
+├── FacadeEPercistenciaTest.java     consulta por categoria na Facade e salvar/carregar itens
+├── EmprestimoDominioTest.java       Emprestimo: prazo, atraso, devolução e view
+├── UsuarioDominioTest.java          Usuario: emprestar/devolver, limite, inativo, equals
+├── ReservaEFilaDominioTest.java     Reserva e fila: posições, cancelamento, exemplar reservado
+└── RegressaoDasRefatoracoesTest.java   identidade final, listas sem vazamento, bibliotecas independentes
+
 dados/                ← itens-exemplo.csv (arquivo de exemplo, não sobrescrever)
 docs/                 ← modelo.puml, modelo.png, decisoes.md, devolutiva da Entrega 1
 .github/workflows/    ← integração contínua (mvn -B verify)
+pom.xml               ← build Maven (JDK 21, JUnit 5)
+DECLARACAO-DE-USO-DE-IA.md   ← declaração de uso de ferramentas de IA
 ```
 
 ---
