@@ -94,7 +94,7 @@ public class Usuario {
             );
         }
 
-        if (!exemplar.podeSerEmprestadoA(this)) {
+        if (!exemplar.podeSerEmprestadoA(this,data)) {
             throw new ExemplarIndisponivelException("Exemplar indisponível: " + exemplar.getTombo());
         }
         if (emprestimosAtivos() >= EmprestimoService.LIMITE_DE_EMPRESTIMOS) {

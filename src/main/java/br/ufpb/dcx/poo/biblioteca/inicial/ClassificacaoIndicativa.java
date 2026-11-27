@@ -13,7 +13,7 @@ public enum ClassificacaoIndicativa {
         return idadeMinima;
     }
 
-    private boolean permiteIdade(int idade){
-        return idade >= idadeMinima;
+    public boolean permiteIdade(int idadeUsuario) {
+        return idadeUsuario >= this.idadeMinima;
     }
 }

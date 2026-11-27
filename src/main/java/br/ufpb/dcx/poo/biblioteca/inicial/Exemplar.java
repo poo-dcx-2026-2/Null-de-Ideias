@@ -3,6 +3,7 @@ package br.ufpb.dcx.poo.biblioteca.inicial;
 import br.ufpb.dcx.poo.biblioteca.contrato.ExemplarView;
 import br.ufpb.dcx.poo.biblioteca.contrato.StatusExemplar;
 import br.ufpb.dcx.poo.biblioteca.contrato.excecoes.OperacaoNaoPermitidaException;
+import java.time.LocalDate;
 
 public class Exemplar {
 
@@ -38,7 +39,12 @@ public class Exemplar {
     }
 
     /** Disponível: qualquer usuário. Reservado: só o primeiro da fila do item. */
-    public boolean podeSerEmprestadoA(Usuario usuario) {
+    public boolean podeSerEmprestadoA(Usuario usuario,LocalDate data) {
+        if (this.item != null && this.item.getClassificacaoIndicativa() != null) {
+            if (!this.item.getClassificacaoIndicativa().permiteIdade(usuario.getIdade(data))) {
+                return false;
+            }
+        }
         if (this.status == StatusExemplar.DISPONIVEL) {
             return true;
         }
